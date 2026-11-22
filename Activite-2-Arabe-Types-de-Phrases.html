@@ -1,0 +1,2060 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"><head><script data-bard-client-injected="true">(function(firebaseConfig, initialAuthToken, appId) {
+        window.__firebase_config = firebaseConfig;
+        window.__initial_auth_token = initialAuthToken;
+        window.__app_id = appId;
+            })("\n{\n  \"apiKey\": \"AIzaSyCqyCcs2R2e7AegGjvFAwG98wlamtbHvZY\",\n  \"authDomain\": \"bard-frontend.firebaseapp.com\",\n  \"projectId\": \"bard-frontend\",\n  \"storageBucket\": \"bard-frontend.firebasestorage.app\",\n  \"messagingSenderId\": \"175205271074\",\n  \"appId\": \"1:175205271074:web:2b7bd4d34d33bf38e6ec7b\"\n}\n","eyJhbGciOiJSUzI1NiIsImtpZCI6IjExNjRiNzdiNDMzZDdhMDAyMWI4NjE4YjhjYTU3ZTMyZGI5MWUxMTMiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJmaXJlYmFzZS1hZG1pbnNkay1mYnN2Y0BiYXJkLWZyb250ZW5kLmlhbS5nc2VydmljZWFjY291bnQuY29tIiwiYXVkIjoiaHR0cHM6Ly9pZGVudGl0eXRvb2xraXQuZ29vZ2xlYXBpcy5jb20vZ29vZ2xlLmlkZW50aXR5LmlkZW50aXR5dG9vbGtpdC52MS5JZGVudGl0eVRvb2xraXQiLCJ1aWQiOiIwODUyMDcwNDcxMjg3ODI4MzAxNCIsImlzcyI6ImZpcmViYXNlLWFkbWluc2RrLWZic3ZjQGJhcmQtZnJvbnRlbmQuaWFtLmdzZXJ2aWNlYWNjb3VudC5jb20iLCJjbGFpbXMiOnsiYXBwSWQiOiJjXzI4ZjIzMWI0NTY4ODk0OGFfbGVjb24tYXJhYmUtdHlwZXMtZGUtcGhyYXNlcy5odG1sLTcwNyJ9LCJleHAiOjE3OTUzNzE4NDEsImlhdCI6MTc5NTM2ODI0MSwiYWxnIjoiUlMyNTYifQ.UdSj5UH6PUO0s2EWKodu78d1ZZcP_fAAGQjbw6VWLikUiQvmkOk2ydWA7rn1CBkCfFT-XWC2UhNU9luZy4EPKzVAJzKU8eL2-_e399RK_dyvs1nwp5Z5gM5w1Px7LcigB81Pwtcz-1wEmkMLTuvzck9Ve2Hhs-4JKZihk79s-S-PQBehU7qi7whlLc8GmPbX31HvSmD3wgSb_oOfDwbmJ-_as78on_T3V5e_xoYf_fWfdbXaGrYKUcaNc84_TFzKKgswJ2Kq7KYHUh90O8AsAh-vRhaRJPEUCANsV5-8MbnLE4FjQsNe0pUW-xzLr81XDkkYGL-yqIAIOq_Hpa1oWg","c_28f231b45688948a_lecon-arabe-types-de-phrases.html-707")</script><script data-bard-client-injected="true">
+  document.addEventListener('input', (event) => {
+    if (event.target && (event.target.isContentEditable || event.target.hasAttribute('contenteditable'))) {
+      const clonedDoc = document.cloneNode(true);
+      const injectedScripts = clonedDoc.querySelectorAll('[data-bard-client-injected="true"]');
+      injectedScripts.forEach(el => el.remove());
+      window.parent.postMessage({
+        type: 'inlineEdit',
+        html: '<!DOCTYPE html>\n' + clonedDoc.documentElement.outerHTML
+      }, '*');
+    }
+  });
+</script><script data-bard-client-injected="true">(function(){'use strict';window.addEventListener("message",a=>{a.data&&a.data.type==="SUPPLEMENTAL_DATA_UPDATE"&&window.dispatchEvent(new CustomEvent("supplementaldataupdate",{detail:a.data.data}))});}).call(this);
+</script><script data-bard-client-injected="true">(function() {
+  const SCROLL_KEYS = new Set([
+    'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
+    ' ', 'Spacebar', 'PageUp', 'PageDown', 'Home', 'End',
+  ]);
+  const HORIZONTAL_KEYS = new Set(['ArrowLeft', 'ArrowRight']);
+
+  function isTextEntryTarget(target) {
+    if (!target) return false;
+    const tagName = target.tagName;
+    return tagName === 'INPUT' || tagName === 'TEXTAREA' ||
+        tagName === 'SELECT' || target.isContentEditable === true;
+  }
+
+  // An element absorbs the key only if it both overflows on the axis being
+  // scrolled and is configured to scroll on that axis. The cheap dimension
+  // test runs first because getComputedStyle forces a style recalc, and this
+  // runs on every keypress. Each axis is read from its own longhand: the
+  // 'overflow' shorthand serializes as two values when the axes differ, which
+  // is the common 'overflow-x: hidden; overflow-y: auto' pane.
+  function canScroll(node, horizontal) {
+    const overflows = horizontal ? node.scrollWidth > node.clientWidth
+                                 : node.scrollHeight > node.clientHeight;
+    if (!overflows) return false;
+    const style = window.getComputedStyle(node);
+    const overflow = horizontal ? style.overflowX : style.overflowY;
+    return overflow === 'auto' || overflow === 'scroll';
+  }
+
+  // Walks up from the event target so nested scrollers keep their behavior.
+  // <body> is included because pages that pin the root height make it the
+  // scroll container.
+  function hasScrollableAncestor(target, horizontal) {
+    let node = target;
+    while (node && node !== document.documentElement) {
+      if (canScroll(node, horizontal)) return true;
+      node = node.parentElement;
+    }
+    return false;
+  }
+
+  function rootCanScroll(horizontal) {
+    const scroller = document.scrollingElement || document.documentElement;
+    if (!scroller) return false;
+    // Tolerate a pixel of rounding so subpixel layouts do not look scrollable.
+    return horizontal ? scroller.scrollWidth > window.innerWidth + 1
+                      : scroller.scrollHeight > window.innerHeight + 1;
+  }
+
+  window.addEventListener('keydown', function(event) {
+    if (!SCROLL_KEYS.has(event.key)) return;
+    if (event.defaultPrevented) return;
+    // Alt and Meta turn arrows into browser history navigation, and Ctrl is
+    // reserved for shortcuts, so none of them are scroll intent.
+    if (event.altKey || event.metaKey || event.ctrlKey) return;
+
+    const target = event.target;
+    if (isTextEntryTarget(target)) return;
+
+    // Anything that can still absorb the scroll gets to keep it.
+    const horizontal = HORIZONTAL_KEYS.has(event.key);
+    if (rootCanScroll(horizontal)) return;
+    if (hasScrollableAncestor(target, horizontal)) return;
+
+    event.preventDefault();
+  }, {capture: true, passive: false});
+})();</script><script data-bard-client-injected="true">(function() {
+  // Ensure this script is executed only once
+  if (window.firebaseAuthBridgeScriptLoaded) {
+    return;
+  }
+  window.firebaseAuthBridgeScriptLoaded = true;
+
+  let nextTokenPromiseId = 0;
+
+  // Stores { resolve, reject } for ongoing token requests
+  const pendingTokenPromises = {};
+
+  // Listen for messages from the Host Application
+  window.addEventListener('message', function(event) {
+
+    const messageData = event.data;
+
+  if (messageData && messageData.type === 'RESOLVE_NEW_FIREBASE_TOKEN') {
+      const { success, token, error, promiseId } = messageData ?? {};
+      if (pendingTokenPromises[promiseId]) {
+        if (success) {
+          pendingTokenPromises[promiseId].resolve(token);
+        } else {
+          pendingTokenPromises[promiseId].reject(new Error(error || 'Token refresh failed from host.'));
+        }
+        delete pendingTokenPromises[promiseId];
+      }
+    }
+  });
+
+  // Expose a function for the Generated App to request a new Firebase token
+  window.requestNewFirebaseToken = function() {
+    const currentPromiseId = nextTokenPromiseId++;
+    const promise = new Promise((resolve, reject) => {
+      pendingTokenPromises[currentPromiseId] = { resolve, reject };
+    });
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({
+        type: 'REQUEST_NEW_FIREBASE_TOKEN',
+        promiseId: currentPromiseId
+      }, '*');
+    } else {
+      pendingTokenPromises[currentPromiseId].reject(new Error('No parent window to request token from.'));
+      delete pendingTokenPromises[currentPromiseId];
+    }
+    return promise;
+  };
+})();</script><script data-bard-client-injected="true">
+let realOriginalGetUserMedia = null;
+if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+  realOriginalGetUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+}
+
+(function() {
+  if (navigator.mediaDevices && navigator.mediaDevices.__proto__) {
+    try {
+      Object.defineProperty(navigator.mediaDevices.__proto__, 'getUserMedia', {
+        get: function() {
+          return undefined; // Or throw an error
+        },
+        configurable: false
+      });
+    } catch (error) {
+      console.error("Error defining prototype getter:", error);
+    }
+  }
+})();
+
+(function() {
+  const pendingMediaResolvers = {};
+  let nextMediaPromiseId = 0;
+
+  function requestMediaPermissions(constraints) {
+    const mediaPromiseId = nextMediaPromiseId++;
+    const promise = new Promise((resolve, reject) => {
+      pendingMediaResolvers[mediaPromiseId] = (granted) => {
+        delete pendingMediaResolvers[mediaPromiseId];
+        resolve(granted);
+      };
+    });
+
+    window.parent.postMessage({
+      type: 'requestMediaPermission',
+      constraints: constraints,
+      promiseId: mediaPromiseId,
+    }, '*');
+
+    return promise;
+  }
+
+  let originalGetUserMedia = realOriginalGetUserMedia;
+
+  function interceptGetUserMedia() {
+    if (navigator.mediaDevices) {
+      Object.defineProperty(navigator.mediaDevices, 'getUserMedia', {
+        value: function(constraints) {
+          return requestMediaPermissions(constraints).then((granted) => {
+            if (granted) {
+              if (originalGetUserMedia) {
+                return originalGetUserMedia(constraints);
+              } else {
+                throw new Error("Original getUserMedia not available.");
+              }
+            } else {
+              throw new DOMException('Permission denied', 'NotAllowedError');
+            }
+          });
+        },
+        writable: false,
+        configurable: false
+      });
+    }
+  }
+
+  interceptGetUserMedia();
+
+  const observer = new MutationObserver(function(mutationsList, observer) {
+    for (const mutation of mutationsList) {
+      if (mutation.type === 'reconfigured' && mutation.name === 'getUserMedia' && mutation.object === navigator.mediaDevices) {
+        interceptGetUserMedia();
+      } else if (mutation.type === 'attributes' && mutation.attributeName === 'getUserMedia' && mutation.target === navigator.mediaDevices) {
+        interceptGetUserMedia();
+      } else if (mutation.type === 'childList' && mutation.addedNodes) {
+        mutation.addedNodes.forEach(node => {
+          if (node === navigator.mediaDevices) {
+            interceptGetUserMedia();
+          }
+        });
+      }
+    }
+  });
+
+  function interceptSpeechRecognition() {
+    if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
+      return;
+    }
+
+    const OriginalSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    const SpeechRecognitionWrapper = function(...args) {
+      const recognizer = new OriginalSpeechRecognition(...args);
+      const originalStart = recognizer.start.bind(recognizer);
+
+      recognizer.start = function() {
+        requestMediaPermissions({ audio: true }).then(granted => {
+          if (granted) {
+            originalStart();
+          } else {
+            const errorEvent = new SpeechRecognitionErrorEvent('error');
+            errorEvent.error = 'not-allowed'; // This is the standard error for permission denial.
+            recognizer.dispatchEvent(errorEvent);
+          }
+        });
+      };
+
+      return recognizer;
+    };
+
+    SpeechRecognitionWrapper.prototype = OriginalSpeechRecognition.prototype;
+    SpeechRecognitionWrapper.prototype.constructor = SpeechRecognitionWrapper;
+
+    if (window.SpeechRecognition) {
+      window.SpeechRecognition = SpeechRecognitionWrapper;
+    }
+    if (window.webkitSpeechRecognition) {
+      window.webkitSpeechRecognition = SpeechRecognitionWrapper;
+    }
+  }
+
+  interceptSpeechRecognition();
+
+  window.addEventListener('message', function(event) {
+    if (event.data) {
+      if (event.data.type === 'resolveMediaPermission') {
+        const { promiseId, granted } = event.data;
+        if (pendingMediaResolvers[promiseId]) {
+          pendingMediaResolvers[promiseId](granted);
+        }
+      }
+    }
+  });
+
+})();</script><script ws-interception-config="{&quot;parentOrigin&quot;:&quot;https://gemini.google.com&quot;,&quot;proxiedDomains&quot;:[]}" data-bard-client-injected="true">(function(){'use strict';var u=typeof Object.defineProperties=="function"?Object.defineProperty:function(b,d,e){if(b==Array.prototype||b==Object.prototype)return b;b[d]=e.value;return b};function v(b){b=["object"==typeof globalThis&&globalThis,b,"object"==typeof window&&window,"object"==typeof self&&self,"object"==typeof global&&global];for(var d=0;d<b.length;++d){var e=b[d];if(e&&e.Math==Math)return e}throw Error("Cannot find global object");}var w=v(this);
+function y(b,d){if(d)a:{var e=w;b=b.split(".");for(var h=0;h<b.length-1;h++){var k=b[h];if(!(k in e))break a;e=e[k]}b=b[b.length-1];h=e[b];d=d(h);d!=h&&d!=null&&u(e,b,{configurable:!0,writable:!0,value:d})}}function z(b){function d(h){return b.next(h)}function e(h){return b.throw(h)}return new Promise(function(h,k){function m(n){n.done?h(n.value):Promise.resolve(n.value).then(d,e).then(m,k)}m(b.next())})}y("globalThis",function(b){return b||w});/*
+
+ Copyright The Closure Library Authors.
+ SPDX-License-Identifier: Apache-2.0
+*/
+function A(b,d){function e(){}e.prototype=d.prototype;b.i=d.prototype;b.prototype=new e;b.prototype.constructor=b;b.h=function(h,k,m){for(var n=Array(arguments.length-2),p=2;p<arguments.length;p++)n[p-2]=arguments[p];return d.prototype[k].apply(h,n)}};function B(b,d,e="*"){function h(a){if(typeof a==="string")return F.encode(a).buffer;if(a instanceof ArrayBuffer)return a.slice(0);if(ArrayBuffer.isView(a))return a.buffer.slice(a.byteOffset,a.byteOffset+a.byteLength);throw Error("Invalid data type");}function k(a){a=h(a);var f={type:"send",data:new Uint8Array(a)},g;(g=r)==null||g.postMessage(f,[a])}function m(){if(!r)throw Error("Data port not captured yet.");r.onmessage=a=>{if(a.data.type==="message"){a=new MessageEvent("message",{data:G.decode(a.data.data)});
+let f;(f=c.onmessage)==null||f.call(c,a);c.dispatchEvent(a)}}}function n(){if(!t)throw Error("Control port not captured yet.");t.onmessage=a=>{switch(a.data.type){case "open":l=1;var f=new Event("open"),g;(g=c.onopen)==null||g.call(c,f);c.dispatchEvent(f);q.forEach(H=>{k(H)});q=[];break;case "close":g=a.data;l=3;g=new CloseEvent("close",{code:g.code,reason:g.reason,wasClean:g.wasClean});(f=c.onclose)==null||f.call(c,g);c.dispatchEvent(g);break;case "error":l=3;f=new Event("error");let x;(x=c.onerror)==
+null||x.call(c,f);c.dispatchEvent(f)}}}function p(a){return z(function*(){var f=new MessageChannel;t=f.port1;var g=new MessageChannel;r=g.port1;n();m();window.parent.postMessage({type:"websocket_open",portOrdering:["control","data"],url:b,protocols:a||[],connectionId:I},e,[f.port2,g.port2])}())}var c=Reflect.construct(EventTarget,[],new.target);c.CONNECTING=0;c.OPEN=1;c.CLOSING=2;c.CLOSED=3;c.url=b;c.binaryType="arraybuffer";c.protocol="";c.extensions="";var l=0,t=null,r=null,q=[],F=new TextEncoder,
+G=new TextDecoder;c.onopen=null;c.onmessage=null;c.onclose=null;c.onerror=null;Object.defineProperty(c,"readyState",{get:()=>l,enumerable:!0,configurable:!0});Object.defineProperty(c,"bufferedAmount",{get:()=>{var a=0;q.forEach(f=>{a+=typeof f==="string"?f.length:f.byteLength});return a},enumerable:!0,configurable:!0});var I=function(){var a;return((a=globalThis.crypto)==null?0:a.randomUUID)?globalThis.crypto.randomUUID():"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,f=>{var g=Math.random()*
+16|0;return(f==="x"?g:g&3|8).toString(16)})}();c.send=a=>{if(l===1)a instanceof Blob?a.arrayBuffer().then(f=>{k(f)}):k(a);else if(l===0)if(typeof a==="string")q.push(a);else if(a instanceof ArrayBuffer||ArrayBuffer.isView(a))q.push(h(a));else throw Error("Sending Blob is not supported before the connection is open.");else console.debug("WebSocket send called in CLOSING or CLOSED state; ignored.")};c.close=(a=1E3,f="")=>{if(l!==2&&l!==3){l=2;a={type:"close",code:a,reason:f,wasClean:a===1E3};var g;
+(g=t)==null||g.postMessage(a)}};Promise.resolve().then(()=>p(d));return c}A(B,EventTarget);var C=document.currentScript,D=C==null?void 0:C.getAttribute("ws-interception-config");if(!D)throw Error("WebSocket Interceptor: Missing ws-interception-config attribute in the script tag.");var E=JSON.parse(D);if(!E.parentOrigin||typeof E.parentOrigin!=="string")throw Error("WebSocket Interceptor: Invalid parentOrigin in ws-interception-config");
+(function(b){var d=Object.getOwnPropertyDescriptor(window,"WebSocket");if(!d||d.writable||d.configurable)d=Object.assign(function(e,h){try{let k=(new URL(e)).hostname;if(b.proxiedDomains.some(m=>k===m||k.endsWith(`.${m}`)))return new B(e,h,b.parentOrigin)}catch(k){throw window.parent.postMessage({type:"websocket_blocked",url:e,reason:"blocked_invalid_url"},b.parentOrigin),new DOMException(`WebSocket connection to '${e}' is not allowed in Canvas.`,"SecurityError");}window.parent.postMessage({type:"websocket_blocked",
+url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMException(`WebSocket connection to '${e}' is not allowed in Canvas.`,"SecurityError");},{CONNECTING:0,OPEN:1,CLOSING:2,CLOSED:3}),Object.defineProperty(window,"WebSocket",{value:d,writable:!1,configurable:!1})})({proxiedDomains:E.proxiedDomains||[],parentOrigin:E.parentOrigin});}).call(this);
+</script><script data-bard-client-injected="true">((function(modelInformation) {
+  const originalFetch = window.fetch;
+  // TODO: b/421908508 - Move these out of the script and match all generative AI model calls.
+  let googleLlmBaseApiUrls = [
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.textModelName + ':streamGenerateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.textModelName + ':generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageModelName + ':predict',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageModelName + ':predictLongRunning',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageEditModelName + ':generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageTransformModelName + ':generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.videoModelName + ':predict',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.videoModelName + ':predictLongRunning',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.ttsModelName + ':generateContent',
+  ];
+  modelInformation.deprecatedTextModelNames.forEach((modelName) => {
+    googleLlmBaseApiUrls.push(
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
+    );
+  });
+  modelInformation.deprecatedImageModelNames.forEach((modelName) => {
+    googleLlmBaseApiUrls.push(
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':predict',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':predictLongRunning',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
+    );
+  });
+  modelInformation.deprecatedGenerateImageModelNames.forEach((modelName) => {
+    googleLlmBaseApiUrls.push(
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
+    );
+  });
+  modelInformation.deprecatedImageTransformModelNames.forEach((modelName) => {
+    googleLlmBaseApiUrls.push(
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
+    );
+  });
+
+  const pendingFetchResolvers = {};
+  let nextPromiseId = 0;
+
+  function handleStringInput(input, optionsArgument) {
+    const actualUrl = input;
+    const fetchCallArgs = [actualUrl, optionsArgument];
+    const effectiveOptions = optionsArgument || {};
+    const bodyForApiKeyCheck = effectiveOptions.body;
+    const bodyForPostMessage = effectiveOptions.body;
+    return { actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage };
+  }
+
+  function handleRequestInput(input, optionsArgument) {
+    const actualUrl = input.url;
+    const fetchCallArgs = [input, optionsArgument];
+    const effectiveOptions = { method: input.method, headers: new Headers(input.headers) };
+    let bodyForApiKeyCheck;
+    let bodyForPostMessage;
+
+    if (optionsArgument) {
+      if (optionsArgument.method) effectiveOptions.method = optionsArgument.method;
+      if (optionsArgument.headers) effectiveOptions.headers = new Headers(optionsArgument.headers);
+      if ('body' in optionsArgument) {
+        bodyForApiKeyCheck = optionsArgument.body;
+        bodyForPostMessage = optionsArgument.body;
+      } else {
+        bodyForApiKeyCheck = undefined;
+        bodyForPostMessage = input.body;
+      }
+    } else {
+      bodyForApiKeyCheck = undefined;
+      bodyForPostMessage = input.body;
+    }
+    return { actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage };
+  }
+
+  window.fetch = function(input, optionsArgument) {
+    let actualUrl;
+    let fetchCallArgs;
+    let effectiveOptions = {};
+    let bodyForApiKeyCheck;
+    let bodyForPostMessage;
+
+    if (typeof input === 'string') {
+      ({actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage} = handleStringInput(input, optionsArgument));
+    } else if (input instanceof Request) {
+      ({actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage} = handleRequestInput(input, optionsArgument));
+    } else {
+      return originalFetch.apply(window, [input, optionsArgument]);
+    }
+
+    effectiveOptions.method = effectiveOptions.method || 'GET';
+    if (!effectiveOptions.headers) {
+      effectiveOptions.headers = new Headers();
+    }
+
+
+    if (typeof actualUrl === 'string' && googleLlmBaseApiUrls.some((url) => actualUrl.startsWith(url))) {
+      let apiKeyIsNull = true;
+
+      const regex = new RegExp("models/([^:]+)");
+      const modelNameMatch = actualUrl.match(regex);
+      const modelName = modelNameMatch ? modelNameMatch[1] : 'unspecified';
+
+
+      try {
+        const urlObject = new URL(actualUrl);  // Use URL object for robust parsing
+        const apiKeyParam = urlObject.searchParams.get('key');
+        if (apiKeyParam) {
+          apiKeyIsNull = false;
+        }
+      } catch (e) {
+        // Continue checks even if URL parsing fails
+      }
+
+      if (apiKeyIsNull && effectiveOptions.headers) {
+        const h = new Headers(effectiveOptions.headers);
+        const apiKeyHeaderValue = h.get('X-API-Key') || h.get('x-api-key');
+        if (apiKeyHeaderValue) {
+          apiKeyIsNull = false;
+          return originalFetch.apply(window, fetchCallArgs);
+        }
+      }
+
+      if (apiKeyIsNull && effectiveOptions.method && ['POST', 'PUT', 'PATCH'].includes(effectiveOptions.method.toUpperCase()) && typeof bodyForApiKeyCheck === 'string') {
+        try {
+          const bodyData = JSON.parse(bodyForApiKeyCheck);
+          if (bodyData && bodyData.apiKey) {
+            apiKeyIsNull = false;
+            return originalFetch.apply(window, fetchCallArgs);
+          }
+        } catch (e) {
+          // Ignore JSON parsing errors
+        }
+      }
+
+      if(apiKeyIsNull) {
+        const promiseId = nextPromiseId++;
+        const promise = new Promise((resolve) => {
+          pendingFetchResolvers[promiseId] = (resolvedResponse) => {
+            delete pendingFetchResolvers[promiseId];
+            resolve(resolvedResponse);
+          };
+        });
+
+        let serializedBodyForPostMessage;
+        if (typeof bodyForPostMessage === 'string' || bodyForPostMessage == null) {
+            serializedBodyForPostMessage = bodyForPostMessage;
+        } else if (bodyForPostMessage instanceof ReadableStream) {
+            serializedBodyForPostMessage = null;
+        } else {
+            try {
+                serializedBodyForPostMessage = JSON.stringify(bodyForPostMessage);
+            } catch (e) {
+                serializedBodyForPostMessage = null;
+            }
+        }
+
+        const messageOptions = {
+            method: effectiveOptions.method,
+            headers: Object.fromEntries(new Headers(effectiveOptions.headers).entries()),
+            body: serializedBodyForPostMessage
+        };
+
+        window.parent.postMessage({
+          type: 'requestFetch',
+          url: actualUrl,
+          modelName: modelName,
+          options: messageOptions,
+          promiseId: promiseId,
+        }, '*');
+
+        return promise;
+      }
+      return originalFetch.apply(window, fetchCallArgs);
+    }
+    return originalFetch.apply(window, fetchCallArgs);
+  };
+
+  window.addEventListener('message', function(event) {
+    if (event.data && event.data.type === 'resolveFetch') {
+      const { promiseId, response } = event.data;
+      if (pendingFetchResolvers[promiseId]) {
+        try {
+          const reconstructedResponse = new Response(response.body, {
+            status: response.status,
+            statusText: response.statusText,
+            headers: new Headers(response.headers),
+          });
+          pendingFetchResolvers[promiseId](reconstructedResponse);
+        } catch (error) {
+          pendingFetchResolvers[promiseId](new Response(null, { status: 500, statusText: "Interceptor Response Reconstruction Error" }));
+        }
+      }
+    }
+  });
+
+}))({"textModelName":"gemini-3-flash-preview","imageModelName":"imagen-4.0-generate-001","imageEditModelName":"gemini-3.1-flash-image","imageTransformModelName":"gemini-3-pro-image","videoModelName":"veo-2.0-generate-001","ttsModelName":"gemini-2.5-flash-preview-tts","deprecatedTextModelNames":["gemini-2.0-flash","gemini-2.5-flash","gemini-2.5-flash-preview-04-17","gemini-2.5-flash-preview-05-20","gemini-2.5-flash-preview-09-2025"],"deprecatedImageModelNames":["imagen-3.0-generate-001","imagen-3.0-generate-002"],"deprecatedGenerateImageModelNames":["gemini-2.5-flash-image-preview","gemini-2.5-flash-image","gemini-3.1-flash-image-preview"],"deprecatedImageTransformModelNames":["gemini-3-pro-image-preview-11-2025"]})</script><script data-bard-client-injected="true">(function() {
+  const OVERLAY_SELECTOR =
+    'dialog[open], [role="dialog"], [role="alertdialog"], [role="menu"], [role="listbox"], [role="combobox"]';
+
+  function isVisibleOverlay(element) {
+    if (element.closest('[hidden], [aria-hidden="true"], [inert]')) {
+      return false;
+    }
+    if (window.getComputedStyle(element).visibility === 'hidden') {
+      return false;
+    }
+    for (let cur = element; cur; cur = cur.parentElement) {
+      if (window.getComputedStyle(cur).display === 'none') {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function hasOpenOverlay() {
+    const candidates = document.querySelectorAll(OVERLAY_SELECTOR);
+    for (let i = 0; i < candidates.length; i++) {
+      if (isVisibleOverlay(candidates[i])) {
+        return true;
+      }
+    }
+    try {
+      if (document.querySelector('[popover]:popover-open')) {
+        return true;
+      }
+    } catch (e) {
+      // Ignore engines that do not support :popover-open.
+    }
+    return false;
+  }
+
+  function isNonEmptySearchInput(target) {
+    return (
+      Boolean(target) &&
+      target.tagName === 'INPUT' &&
+      typeof target.type === 'string' &&
+      target.type.toLowerCase() === 'search' &&
+      typeof target.value === 'string' &&
+      target.value.length > 0
+    );
+  }
+
+  function shouldIgnoreEscape(event) {
+    return (
+      event.key !== 'Escape' ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.shiftKey ||
+      event.isComposing ||
+      event.repeat ||
+      event.keyCode === 229 ||
+      isNonEmptySearchInput(event.target)
+    );
+  }
+
+  let shouldIgnoreCaptureState = false;
+
+  window.addEventListener(
+    'keydown',
+    function(event) {
+      if (event.key === 'Escape') {
+        shouldIgnoreCaptureState =
+          hasOpenOverlay() || isNonEmptySearchInput(event.target);
+      }
+    },
+    {capture: true},
+  );
+
+  window.addEventListener('keydown', function(event) {
+    if (
+      shouldIgnoreEscape(event) ||
+      event.defaultPrevented ||
+      shouldIgnoreCaptureState
+    ) {
+      return;
+    }
+    const wasBlockedOnCapture = shouldIgnoreCaptureState;
+    queueMicrotask(function() {
+      if (event.defaultPrevented || wasBlockedOnCapture) {
+        return;
+      }
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({'type': 'escapeKey'}, '*');
+      }
+    });
+  });
+})();</script><script data-bard-client-injected="true">(function() {
+  function normalizeSlug(str) {
+    try {
+      return str
+        .trim()
+        .toLowerCase()
+        .replace(/[^p{L}p{N}s_-]/gu, '')
+        .replace(/s+/g, '-');
+    } catch (e) {
+      return str
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9s_-]/g, '')
+        .replace(/s+/g, '-');
+    }
+  }
+
+  function findTargetElement(hash) {
+    if (!hash || hash === '#') {
+      return null;
+    }
+    const rawId = hash.startsWith('#') ? hash.slice(1) : hash;
+    let decodedId = rawId;
+    try {
+      decodedId = decodeURIComponent(rawId);
+    } catch (e) {
+      // Ignore URI malformed errors.
+    }
+
+    // 1. Direct ID match (raw and decoded).
+    let target = document.getElementById(rawId) || document.getElementById(decodedId);
+    if (target) {
+      return target;
+    }
+
+    // 2. Name attribute match (<a name="...">).
+    try {
+      if (typeof CSS !== 'undefined' && CSS.escape) {
+        target =
+          document.querySelector('[name="' + CSS.escape(rawId) + '"]') ||
+          document.querySelector('[name="' + CSS.escape(decodedId) + '"]');
+      } else {
+        const namedElements = document.getElementsByName(rawId);
+        if (namedElements && namedElements.length > 0) {
+          return namedElements[0];
+        }
+      }
+    } catch (e) {
+      // Ignore querySelector syntax errors.
+    }
+    if (target) {
+      return target;
+    }
+
+    // 3. Match heading text by slug (for Markdown TOCs where headings lack explicit IDs).
+    const targetSlug = normalizeSlug(decodedId);
+    if (targetSlug) {
+      for (const heading of document.querySelectorAll('h1, h2, h3, h4, h5, h6')) {
+        if (normalizeSlug(heading.textContent || '') === targetSlug) {
+          return heading;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  document.addEventListener('click', function(event) {
+    const target = event.target;
+    const anchor = target && typeof target.closest === 'function' ? target.closest('a') : null;
+    if (!anchor) {
+      return;
+    }
+
+    const href = anchor.getAttribute('href');
+    if (
+      !href ||
+      href.trim().toLowerCase().startsWith('javascript:') ||
+      anchor.hasAttribute('download')
+    ) {
+      return;
+    }
+
+    // Check if the link is an in-page hash / anchor link.
+    if (href.startsWith('#')) {
+      event.preventDefault();
+      const targetElement = findTargetElement(href);
+      if (targetElement) {
+        targetElement.scrollIntoView({behavior: 'smooth', block: 'start'});
+      }
+      return;
+    }
+
+    // Check if the URL has the same origin/pathname but with a hash.
+    try {
+      const url = new URL(anchor.href, window.location.href);
+      if (
+        url.hash &&
+        url.origin === window.location.origin &&
+        url.pathname === window.location.pathname
+      ) {
+        event.preventDefault();
+        const targetElement = findTargetElement(url.hash);
+        if (targetElement) {
+          targetElement.scrollIntoView({behavior: 'smooth', block: 'start'});
+        }
+        return;
+      }
+    } catch (e) {
+      // Fall through if URL parsing fails.
+    }
+
+    // For all external or full navigation links, prevent iframe-level navigation
+    // (which breaks in AGSA WebView or sandboxed iframes) and ensure they open
+    // safely in a new tab/window.
+    if (anchor.target !== '_blank') {
+      event.preventDefault();
+      window.open(anchor.href, '_blank', 'noopener,noreferrer');
+    }
+  }, {capture: true});
+})();</script><script data-bard-client-injected="true">(function(){'use strict';function a(){window.parent.postMessage({type:"interaction"},"*")}window.addEventListener("click",a,{capture:!0,passive:!0});window.addEventListener("touchstart",a,{capture:!0,passive:!0});window.addEventListener("keydown",a,{capture:!0,passive:!0});}).call(this);
+</script><script data-bard-client-injected="true">(function() {
+  const originalConsoleLog = console.log;
+  const originalConsoleError = console.error;
+
+    /**
+   * Normalizes an error event or a promise rejection reason into a structured error object.
+   * @param {*} errorEventOrReason The error object or reason.
+   * @return {object} Structured error data { message, name, stack }.
+   */
+  function getErrorObject(errorEventOrReason) {
+    if (errorEventOrReason instanceof Error) {
+      return {
+        message: errorEventOrReason.message,
+        name: errorEventOrReason.name,
+        stack: errorEventOrReason.stack,
+      };
+    }
+    // Fallback for non-Error objects.
+    try {
+      return {
+        message: JSON.stringify(errorEventOrReason),
+        name: 'UnknownErrorType',
+        stack: null,
+      };
+    } catch (e) {
+      return {
+        message: String(errorEventOrReason),
+        name: 'UnknownErrorTypeNonStringifiable',
+        stack: null,
+      };
+    }
+  }
+
+  /**
+   * Converts an array of arguments (from log/error) into a single string.
+   * Handles Error objects specially to include their message and stack.
+   * @param {Array<*>} args - Arguments passed to console methods.
+   * @return {string} A string representation of the arguments.
+   */
+  function stringifyArgs(args) {
+    return args
+      .map((arg) => {
+        if (arg instanceof Error) {
+          const {message, stack} = arg;
+          return `Error: ${message}${stack ? ('\nStack: ' + stack) : ''}`;
+        }
+        if (typeof arg === 'object' && arg !== null) {
+          try {
+            return JSON.stringify(arg);
+          } catch (error) {
+            return '[Circular Object]';
+          }
+        } else {
+          return String(arg);
+        }
+      })
+      .join(' ');
+  }
+
+  console.log = function(...args) {
+    const logString = stringifyArgs(args);
+    window.parent.postMessage({ type: 'log', message: logString }, '*');
+    originalConsoleLog.apply(console, args);
+  };
+
+  console.error = function(...args) {
+    let errorData;
+    if (args.length > 0 && args[0] instanceof Error) {
+      const err = args[0];
+      // If the first arg is an Error, capture its details.
+      errorData = {
+        type: 'error',
+        source: 'CONSOLE_ERROR',
+        ...getErrorObject(err),
+        rawArgsString: stringifyArgs(args.slice(1)),
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      // If not an Error object, treat all args as a general error message.
+      errorData = {
+        type: 'error',
+        source: 'CONSOLE_ERROR',
+        message: stringifyArgs(args),
+        name: 'ConsoleLoggedError',
+        stack: null,
+        timestamp: new Date().toISOString(),
+      };
+    }
+    window.parent.postMessage(errorData, '*');
+    originalConsoleError.apply(console, args);
+  };
+
+  // Listen for global unhandled synchronous errors.
+  window.addEventListener('error', function(event) {
+    const errorDetails = event.error ? getErrorObject(event.error) : {
+      message: event.message,
+      name: 'GlobalError',
+      stack: null,
+      filename: event.filename,
+      lineno: event.lineno,
+      colno: event.colno,
+    };
+
+    window.parent.postMessage({
+      type: 'error',
+      source: 'global',
+      ...errorDetails,
+      message: errorDetails.message || event.message,
+      timestamp: new Date().toISOString(),
+    }, '*');
+  });
+
+  // Listen for unhandled promise rejections (asynchronous errors).
+  window.addEventListener('unhandledrejection', function(event) {
+    const errorDetails = getErrorObject(event.reason);
+
+    window.parent.postMessage({
+      type: 'error',
+      source: 'unhandledrejection',
+      ...errorDetails,
+      message: errorDetails.message || 'Unhandled Promise Rejection',
+      timestamp: new Date().toISOString(),
+    }, '*');
+  });
+
+})();</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>النشاط 2: L'Arabe — أقسام الجملة (Les types de phrases)</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Cairo & Tajawal pour l'arabe, Inter pour le français -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            arabic: ['Cairo', 'sans-serif'],
+            french: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            cream: '#FAF8F5',
+            sand: '#F2EFE9',
+            slateBlue: {
+              50: '#F0F4F8',
+              100: '#D9E2EC',
+              600: '#334E68',
+              700: '#243B53',
+              800: '#102A43',
+            },
+            sage: {
+              50: '#F2F7F4',
+              100: '#DCECE2',
+              500: '#4A7C59',
+              600: '#3B6648',
+              700: '#2D5038',
+            },
+            amberSoft: {
+              50: '#FFFBEB',
+              100: '#FEF3C7',
+              600: '#D97706',
+              700: '#B45309',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      background-color: #FAF8F5;
+      color: #1E293B;
+      line-height: 1.8;
+    }
+
+    .fr-text {
+      font-family: 'Inter', sans-serif;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .arabic-vowel {
+      font-feature-settings: "kern" 1, "liga" 1;
+      letter-spacing: 0.01em;
+    }
+
+    /* Animation douce pour les feedbacks */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.25s ease-out forwards;
+    }
+
+    /* Mode masquage des traductions si l'élève souhaite s'auto-évaluer */
+    body.hide-translations .translation-box {
+      display: none;
+    }
+
+    /* Styles d'impression propres pour sauvegarde PDF / Google Drive */
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+      body {
+        background-color: #FFFFFF !important;
+        color: #000000 !important;
+      }
+      .card-shadow {
+        box-shadow: none !important;
+        border: 1px solid #CBD5E1 !important;
+      }
+      #corrige-content {
+        display: block !important;
+      }
+    }
+  </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.sticky{position:sticky}.top-0{top:0px}.z-30{z-index:30}.mx-auto{margin-left:auto;margin-right:auto}.mb-1{margin-bottom:0.25rem}.mb-2{margin-bottom:0.5rem}.mb-3{margin-bottom:0.75rem}.mb-5{margin-bottom:1.25rem}.mb-8{margin-bottom:2rem}.ml-2{margin-left:0.5rem}.mt-1{margin-top:0.25rem}.mt-2{margin-top:0.5rem}.mt-3{margin-top:0.75rem}.mt-4{margin-top:1rem}.mt-6{margin-top:1.5rem}.mt-8{margin-top:2rem}.mr-8{margin-right:2rem}.block{display:block}.inline-block{display:inline-block}.flex{display:flex}.inline-flex{display:inline-flex}.grid{display:grid}.hidden{display:none}.h-8{height:2rem}.h-6{height:1.5rem}.min-h-screen{min-height:100vh}.min-h-\[52px\]{min-height:52px}.w-8{width:2rem}.w-6{width:1.5rem}.min-w-\[85px\]{min-width:85px}.max-w-2xl{max-width:42rem}.max-w-4xl{max-width:56rem}.max-w-xs{max-width:20rem}.shrink-0{flex-shrink:0}.cursor-pointer{cursor:pointer}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.items-center{align-items:center}.justify-end{justify-content:flex-end}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1\.5{gap:0.375rem}.gap-2{gap:0.5rem}.gap-3{gap:0.75rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.space-y-1 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.25rem * var(--tw-space-y-reverse))}.space-y-10 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(2.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(2.5rem * var(--tw-space-y-reverse))}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-3 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.75rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.space-y-5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.25rem * var(--tw-space-y-reverse))}.space-y-6 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.5rem * var(--tw-space-y-reverse))}.space-y-8 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(2rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(2rem * var(--tw-space-y-reverse))}.rounded-2xl{border-radius:1rem}.rounded-3xl{border-radius:1.5rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-xl{border-radius:0.75rem}.border{border-width:1px}.border-2{border-width:2px}.border-b{border-bottom-width:1px}.border-r-4{border-right-width:4px}.border-t{border-top-width:1px}.border-b-2{border-bottom-width:2px}.border-dashed{border-style:dashed}.border-amberSoft-100{--tw-border-opacity:1;border-color:rgb(254 243 199 / var(--tw-border-opacity, 1))}.border-amberSoft-600{--tw-border-opacity:1;border-color:rgb(217 119 6 / var(--tw-border-opacity, 1))}.border-sage-100{--tw-border-opacity:1;border-color:rgb(220 236 226 / var(--tw-border-opacity, 1))}.border-slate-100{--tw-border-opacity:1;border-color:rgb(241 245 249 / var(--tw-border-opacity, 1))}.border-slate-200{--tw-border-opacity:1;border-color:rgb(226 232 240 / var(--tw-border-opacity, 1))}.border-slate-200\/70{border-color:rgb(226 232 240 / 0.7)}.border-slate-200\/80{border-color:rgb(226 232 240 / 0.8)}.border-slateBlue-100{--tw-border-opacity:1;border-color:rgb(217 226 236 / var(--tw-border-opacity, 1))}.border-slate-300{--tw-border-opacity:1;border-color:rgb(203 213 225 / var(--tw-border-opacity, 1))}.border-slate-400{--tw-border-opacity:1;border-color:rgb(148 163 184 / var(--tw-border-opacity, 1))}.bg-amberSoft-100{--tw-bg-opacity:1;background-color:rgb(254 243 199 / var(--tw-bg-opacity, 1))}.bg-amberSoft-50{--tw-bg-opacity:1;background-color:rgb(255 251 235 / var(--tw-bg-opacity, 1))}.bg-amberSoft-50\/80{background-color:rgb(255 251 235 / 0.8)}.bg-cream{--tw-bg-opacity:1;background-color:rgb(250 248 245 / var(--tw-bg-opacity, 1))}.bg-sage-100{--tw-bg-opacity:1;background-color:rgb(220 236 226 / var(--tw-bg-opacity, 1))}.bg-sage-50\/70{background-color:rgb(242 247 244 / 0.7)}.bg-sage-50\/80{background-color:rgb(242 247 244 / 0.8)}.bg-sage-600{--tw-bg-opacity:1;background-color:rgb(59 102 72 / var(--tw-bg-opacity, 1))}.bg-slate-100{--tw-bg-opacity:1;background-color:rgb(241 245 249 / var(--tw-bg-opacity, 1))}.bg-slate-50{--tw-bg-opacity:1;background-color:rgb(248 250 252 / var(--tw-bg-opacity, 1))}.bg-slateBlue-100{--tw-bg-opacity:1;background-color:rgb(217 226 236 / var(--tw-bg-opacity, 1))}.bg-slateBlue-50{--tw-bg-opacity:1;background-color:rgb(240 244 248 / var(--tw-bg-opacity, 1))}.bg-slateBlue-50\/70{background-color:rgb(240 244 248 / 0.7)}.bg-slateBlue-700{--tw-bg-opacity:1;background-color:rgb(36 59 83 / var(--tw-bg-opacity, 1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-white\/90{background-color:rgb(255 255 255 / 0.9)}.bg-white\/95{background-color:rgb(255 255 255 / 0.95)}.bg-amberSoft-600{--tw-bg-opacity:1;background-color:rgb(217 119 6 / var(--tw-bg-opacity, 1))}.bg-cream\/60{background-color:rgb(250 248 245 / 0.6)}.bg-slate-200{--tw-bg-opacity:1;background-color:rgb(226 232 240 / var(--tw-bg-opacity, 1))}.p-3{padding:0.75rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.p-2\.5{padding:0.625rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-2\.5{padding-left:0.625rem;padding-right:0.625rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-4{padding-left:1rem;padding-right:1rem}.py-0\.5{padding-top:0.125rem;padding-bottom:0.125rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-2\.5{padding-top:0.625rem;padding-bottom:0.625rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.py-8{padding-top:2rem;padding-bottom:2rem}.px-3\.5{padding-left:0.875rem;padding-right:0.875rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.pb-10{padding-bottom:2.5rem}.pb-4{padding-bottom:1rem}.pb-5{padding-bottom:1.25rem}.pt-3{padding-top:0.75rem}.pt-4{padding-top:1rem}.pt-6{padding-top:1.5rem}.pt-8{padding-top:2rem}.pt-1{padding-top:0.25rem}.text-center{text-align:center}.text-2xl{font-size:1.5rem;line-height:2rem}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-extrabold{font-weight:800}.font-medium{font-weight:500}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.leading-tight{line-height:1.25}.tracking-wider{letter-spacing:0.05em}.text-amberSoft-600{--tw-text-opacity:1;color:rgb(217 119 6 / var(--tw-text-opacity, 1))}.text-amberSoft-700{--tw-text-opacity:1;color:rgb(180 83 9 / var(--tw-text-opacity, 1))}.text-sage-600{--tw-text-opacity:1;color:rgb(59 102 72 / var(--tw-text-opacity, 1))}.text-sage-700{--tw-text-opacity:1;color:rgb(45 80 56 / var(--tw-text-opacity, 1))}.text-slate-500{--tw-text-opacity:1;color:rgb(100 116 139 / var(--tw-text-opacity, 1))}.text-slate-600{--tw-text-opacity:1;color:rgb(71 85 105 / var(--tw-text-opacity, 1))}.text-slate-700{--tw-text-opacity:1;color:rgb(51 65 85 / var(--tw-text-opacity, 1))}.text-slate-800{--tw-text-opacity:1;color:rgb(30 41 59 / var(--tw-text-opacity, 1))}.text-slateBlue-600{--tw-text-opacity:1;color:rgb(51 78 104 / var(--tw-text-opacity, 1))}.text-slateBlue-700{--tw-text-opacity:1;color:rgb(36 59 83 / var(--tw-text-opacity, 1))}.text-slateBlue-800{--tw-text-opacity:1;color:rgb(16 42 67 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184 / var(--tw-text-opacity, 1))}.underline{-webkit-text-decoration-line:underline;text-decoration-line:underline}.decoration-sage-500{-webkit-text-decoration-color:#4A7C59;text-decoration-color:#4A7C59}.decoration-slateBlue-600{-webkit-text-decoration-color:#334E68;text-decoration-color:#334E68}.decoration-2{text-decoration-thickness:2px}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.backdrop-blur{--tw-backdrop-blur:blur(8px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition{transition-property:color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.selection\:bg-sage-100 *::selection{--tw-bg-opacity:1;background-color:rgb(220 236 226 / var(--tw-bg-opacity, 1))}.selection\:text-sage-700 *::selection{--tw-text-opacity:1;color:rgb(45 80 56 / var(--tw-text-opacity, 1))}.selection\:bg-sage-100::selection{--tw-bg-opacity:1;background-color:rgb(220 236 226 / var(--tw-bg-opacity, 1))}.selection\:text-sage-700::selection{--tw-text-opacity:1;color:rgb(45 80 56 / var(--tw-text-opacity, 1))}.hover\:border-slateBlue-600\/40:hover{border-color:rgb(51 78 104 / 0.4)}.hover\:border-amberSoft-600:hover{--tw-border-opacity:1;border-color:rgb(217 119 6 / var(--tw-border-opacity, 1))}.hover\:bg-amberSoft-100:hover{--tw-bg-opacity:1;background-color:rgb(254 243 199 / var(--tw-bg-opacity, 1))}.hover\:bg-sage-100:hover{--tw-bg-opacity:1;background-color:rgb(220 236 226 / var(--tw-bg-opacity, 1))}.hover\:bg-sage-700:hover{--tw-bg-opacity:1;background-color:rgb(45 80 56 / var(--tw-bg-opacity, 1))}.hover\:bg-slate-200:hover{--tw-bg-opacity:1;background-color:rgb(226 232 240 / var(--tw-bg-opacity, 1))}.hover\:bg-slateBlue-800:hover{--tw-bg-opacity:1;background-color:rgb(16 42 67 / var(--tw-bg-opacity, 1))}.hover\:bg-amberSoft-50:hover{--tw-bg-opacity:1;background-color:rgb(255 251 235 / var(--tw-bg-opacity, 1))}.hover\:bg-sage-50:hover{--tw-bg-opacity:1;background-color:rgb(242 247 244 / var(--tw-bg-opacity, 1))}.hover\:bg-slate-300:hover{--tw-bg-opacity:1;background-color:rgb(203 213 225 / var(--tw-bg-opacity, 1))}.hover\:bg-slateBlue-50:hover{--tw-bg-opacity:1;background-color:rgb(240 244 248 / var(--tw-bg-opacity, 1))}@media (min-width: 640px){.sm\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.sm\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.sm\:flex-row{flex-direction:row}.sm\:items-center{align-items:center}.sm\:gap-4{gap:1rem}.sm\:p-5{padding:1.25rem}.sm\:p-8{padding:2rem}.sm\:py-10{padding-top:2.5rem;padding-bottom:2.5rem}.sm\:text-2xl{font-size:1.5rem;line-height:2rem}.sm\:text-3xl{font-size:1.875rem;line-height:2.25rem}.sm\:text-4xl{font-size:2.25rem;line-height:2.5rem}.sm\:text-base{font-size:1rem;line-height:1.5rem}.sm\:text-lg{font-size:1.125rem;line-height:1.75rem}.sm\:text-sm{font-size:0.875rem;line-height:1.25rem}.sm\:text-xl{font-size:1.25rem;line-height:1.75rem}}@media (min-width: 768px){.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.md\:flex-row{flex-direction:row}.md\:items-center{align-items:center}}</style></head>
+<body class="min-h-screen antialiased selection:bg-sage-100 selection:text-sage-700">
+
+  <!-- Barre d'outils supérieure (Autonomie & Google Drive) -->
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200/80 shadow-sm no-print">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <!-- Badges Niveau & Autonomie -->
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs sm:text-sm font-bold bg-sage-100 text-sage-700">
+          🎯 المستوى: مبتدئ
+        </span>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-slateBlue-50 text-slateBlue-700 fr-text">
+          🇫🇷 Aide bilingue intégrée
+        </span>
+      </div>
+
+      <!-- Actions pratiques : Afficher/Masquer traduction, Télécharger pour Drive, Imprimer -->
+      <div class="flex flex-wrap items-center gap-2">
+        <button id="toggle-fr-btn" onclick="toggleTranslations()" class="px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-amberSoft-50 text-amberSoft-700 border border-amberSoft-100 hover:bg-amberSoft-100 transition cursor-pointer" title="إظهار أو إخفاء الترجمة الفرنسية">
+          👁️ إخفاء الترجمة الفرنسية
+        </button>
+
+       
+        <button onclick="window.print()" class="px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition cursor-pointer" title="طباعة الدرس أو حفظه PDF">
+          🖨️ PDF
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Conteneur Principal -->
+  <main class="max-w-4xl mx-auto px-4 py-8 sm:py-10 space-y-10">
+
+    <!-- Bannière de bienvenue rassurante pour élève sans aide à domicile -->
+    <section class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm card-shadow">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5 mb-5">
+        <div>
+          <p class="text-sm font-bold text-sage-600 mb-1">بطاقة درس تفاعلية للدراسة الذاتية • Fiche d'apprentissage autonome</p>
+          <h1 class="text-2xl sm:text-4xl font-extrabold text-slateBlue-800 leading-tight">
+            📌 النشاط 2: L'Arabe — أقسام الجملة
+          </h1>
+          <p class="fr-text text-base sm:text-lg font-medium text-slateBlue-600 mt-1">
+            Les types de phrases en arabe (Phrase nominale &amp; Phrase verbale)
+          </p>
+        </div>
+      </div>
+
+      <!-- Message d'encouragement et mode d'emploi -->
+      <div class="bg-sage-50/80 border border-sage-100 rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+        <div class="space-y-1">
+          <p class="font-bold text-sage-700 text-base">💡 كيف تدرس هذا الدرس بمفردك؟</p>
+          <p class="text-sm text-slate-700">
+            اقرأ القاعدة خطوة بخطوة، استعن بالترجمة الفرنسية والألوان المميّزة، ثم أنجز التمارين التفاعلية وتحقق من إجاباتك مباشرة.
+          </p>
+        </div>
+        <div class="translation-box fr-text text-xs text-slate-600 bg-white/90 p-3 rounded-xl border border-sage-100 shrink-0 max-w-xs">
+            <strong>Mode d'emploi :</strong> Lis chaque règle avec sa traduction, observe les couleurs (sujet / verbe) puis fais les exercices interactifs à ton rythme.
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- SECTION 1 : EXPLICATION DU COURS (أقسام الجملة)            -->
+    <!-- ========================================================= -->
+    <section aria-labelledby="lesson-title" class="space-y-6">
+      <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm card-shadow">
+        <div class="text-center max-w-2xl mx-auto mb-8">
+          <h2 id="lesson-title" class="text-2xl sm:text-3xl font-extrabold text-slateBlue-800">
+            تنقسم الجملةُ في اللغة العربية إلى قسمين
+          </h2>
+          <p class="translation-box fr-text text-center text-slateBlue-600 font-medium mt-1">
+            En arabe, la phrase se divise en deux catégories principales :
+          </p>
+        </div>
+
+        <!-- Schéma visuel comparatif des 2 types de phrases -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <!-- Carte 1 : الجملة الاسمية -->
+          <div class="rounded-2xl bg-slateBlue-50/70 border-2 border-slateBlue-100 p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-3">
+                <span class="px-3 py-1 rounded-full bg-slateBlue-700 text-white text-sm font-bold">1️⃣ القسم الأول</span>
+                <span class="fr-text text-xs font-bold uppercase tracking-wider text-slateBlue-600">Phrase Nominale</span>
+              </div>
+              <h3 class="text-2xl font-extrabold text-slateBlue-800 mb-2">الجملةُ الاسميةُ</h3>
+              <p class="text-slate-700 font-semibold text-base">
+                هي الجملة التي <span class="underline decoration-slateBlue-600 decoration-2 font-bold text-slateBlue-800">تبدأ باسم</span>.
+              </p>
+              <p class="translation-box fr-text text-sm text-slate-600 mt-1">
+                C'est une phrase qui <strong>commence par un nom</strong>.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slateBlue-100 text-sm font-bold text-slateBlue-700">
+              المكونات: <span class="bg-white px-2.5 py-1 rounded-lg border border-slateBlue-100">مُبْتَدَأ</span> + <span class="bg-white px-2.5 py-1 rounded-lg border border-slateBlue-100">خَبَر</span>
+            </div>
+          </div>
+
+          <!-- Carte 2 : الجملة الفعلية -->
+          <div class="rounded-2xl bg-sage-50/80 border-2 border-sage-100 p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-3">
+                <span class="px-3 py-1 rounded-full bg-sage-600 text-white text-sm font-bold">2️⃣ القسم الثاني</span>
+                <span class="fr-text text-xs font-bold uppercase tracking-wider text-sage-700">Phrase Verbale</span>
+              </div>
+              <h3 class="text-2xl font-extrabold text-sage-700 mb-2">الجملةُ الفعليةُ</h3>
+              <p class="text-slate-700 font-semibold text-base">
+                هي الجملة التي <span class="underline decoration-sage-500 decoration-2 font-bold text-sage-700">تبدأ بفعل</span>.
+              </p>
+              <p class="translation-box fr-text text-sm text-slate-600 mt-1">
+                C'est une phrase qui <strong>commence par un verbe</strong>.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-sage-100 text-sm font-bold text-sage-700">
+              المكونات: <span class="bg-white px-2 py-1 rounded-lg border border-sage-100">فِعْل</span> + <span class="bg-white px-2 py-1 rounded-lg border border-sage-100">فَاعِل</span> + <span class="bg-white px-2 py-1 rounded-lg border border-sage-100">مَفْعُول بِهِ</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================================================== -->
+        <!-- DÉTAIL 1 : الجملة الاسمية (La phrase nominale)        -->
+        <!-- ===================================================== -->
+        <div class="space-y-5 pt-4 border-t border-slate-100">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h3 class="text-xl sm:text-2xl font-extrabold text-slateBlue-800 flex items-center gap-2">
+              <span class="w-8 h-8 rounded-xl bg-slateBlue-700 text-white inline-flex items-center justify-center text-base">1</span>
+              الجملة الاسمية (La phrase nominale)
+            </h3>
+          </div>
+
+          <!-- Explication des composants -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/70">
+              <div class="font-bold text-slateBlue-800 text-lg mb-1">🔹 المبتدأ (Le Moubtada')</div>
+              <p class="text-sm text-slate-700">هو الاسم الذي نبدأ به الجملة ونتحدث عنه.</p>
+              <p class="translation-box fr-text text-xs text-slate-600 mt-1">
+                C'est le nom par lequel commence la phrase (le thème / sujet).
+              </p>
+            </div>
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/70">
+              <div class="font-bold text-sage-700 text-lg mb-1">🔹 الخبر (Le Khabar)</div>
+              <p class="text-sm text-slate-700">هو الكلمة التي تُخبرنا عن المبتدأ وتُتمّم المعنى.</p>
+              <p class="translation-box fr-text text-xs text-slate-600 mt-1">
+                C'est l'information qui complète le sens du المبتدأ (l'attribut).
+              </p>
+            </div>
+          </div>
+
+          <!-- Règle d'or sur le cas nominatif (مرفوع) -->
+          <div class="bg-amberSoft-50 border-r-4 border-amberSoft-600 rounded-2xl p-4 sm:p-5">
+            <p class="font-extrabold text-amberSoft-700 text-base sm:text-lg mb-1">
+              ⭐ قاعدة ذهبية (الحركة الإعرابية):
+            </p>
+            <p class="font-bold text-slate-800 text-base">
+              المبتدأ دائمًا يكون <span class="text-slateBlue-700 underline">مرفوعًا</span> (بالضمة ــُ / ــٌ)، والخبر دائمًا يكون <span class="text-sage-700 underline">مرفوعًا</span> (بالضمة ــُ / ــٌ).
+            </p>
+            <p class="translation-box fr-text text-sm text-slate-700 mt-2">
+              <strong>Règle essentielle :</strong> Le <em>المبتدأ</em> et le <em>الخبر</em> sont <strong>toujours au cas nominatif (مرفوع)</strong>, ce qui se voit ici par la voyelle <strong>damma ( ـُ ou ـٌ )</strong> à la fin de chaque mot.
+            </p>
+          </div>
+
+          <!-- Exemples visuels interactifs de la phrase nominale -->
+          <div>
+            <h4 class="font-bold text-slate-800 text-lg mb-3">
+              📝 أمثلة بسيطة ومُحلّلة (Exemples simples analysés) :
+            </h4>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- Exemple 1 -->
+              <div class="bg-white border border-slate-200 rounded-2xl p-4 hover:border-slateBlue-600/40 transition">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600">مثال 1</span>
+                  <span class="translation-box fr-text text-xs font-medium text-slate-500">Le soleil est brillant / levé</span>
+                </div>
+                <div class="flex items-center justify-center gap-3 py-3 bg-cream rounded-xl text-2xl font-extrabold arabic-vowel">
+                  <div class="text-center">
+                    <span class="text-slateBlue-700">الشَّمْسُ</span>
+                    <span class="block text-xs font-bold text-slateBlue-600 mt-1">مبتدأ مرفوع</span>
+                  </div>
+                  <div class="text-center">
+                    <span class="text-sage-600">طَالِعَةٌ</span>
+                    <span class="block text-xs font-bold text-sage-600 mt-1">خبر مرفوع</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Exemple 2 -->
+              <div class="bg-white border border-slate-200 rounded-2xl p-4 hover:border-slateBlue-600/40 transition">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600">مثال 2</span>
+                  <span class="translation-box fr-text text-xs font-medium text-slate-500">La lune est lumineuse</span>
+                </div>
+                <div class="flex items-center justify-center gap-3 py-3 bg-cream rounded-xl text-2xl font-extrabold arabic-vowel">
+                  <div class="text-center">
+                    <span class="text-slateBlue-700">القَمَرُ</span>
+                    <span class="block text-xs font-bold text-slateBlue-600 mt-1">مبتدأ مرفوع</span>
+                  </div>
+                  <div class="text-center">
+                    <span class="text-sage-600">مُنِيرٌ</span>
+                    <span class="block text-xs font-bold text-sage-600 mt-1">خبر مرفوع</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Exemple 3 -->
+              <div class="bg-white border border-slate-200 rounded-2xl p-4 hover:border-slateBlue-600/40 transition">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600">مثال 3</span>
+                  <span class="translation-box fr-text text-xs font-medium text-slate-500">L'école est belle</span>
+                </div>
+                <div class="flex items-center justify-center gap-3 py-3 bg-cream rounded-xl text-2xl font-extrabold arabic-vowel">
+                  <div class="text-center">
+                    <span class="text-slateBlue-700">المَدْرَسَةُ</span>
+                    <span class="block text-xs font-bold text-slateBlue-600 mt-1">مبتدأ مرفوع</span>
+                  </div>
+                  <div class="text-center">
+                    <span class="text-sage-600">جَمِيلَةٌ</span>
+                    <span class="block text-xs font-bold text-sage-600 mt-1">خبر مرفوع</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Exemple 4 (Interactif avec الجو بارد / معتدل / حار) -->
+              <div class="bg-white border border-slate-200 rounded-2xl p-4 hover:border-slateBlue-600/40 transition">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-sage-100 text-sage-700">مثال 4 (تفاعلي)</span>
+                  <span id="weather-fr" class="translation-box fr-text text-xs font-medium text-slate-500">Le temps est froid</span>
+                </div>
+                <div class="flex items-center justify-center gap-3 py-3 bg-cream rounded-xl text-2xl font-extrabold arabic-vowel">
+                  <div class="text-center">
+                    <span class="text-slateBlue-700">الجَوُّ</span>
+                    <span class="block text-xs font-bold text-slateBlue-600 mt-1">مبتدأ مرفوع</span>
+                  </div>
+                  <div class="text-center">
+                    <span id="weather-khabar" class="text-sage-600">بَارِدٌ</span>
+                    <span class="block text-xs font-bold text-sage-600 mt-1">خبر مرفوع</span>
+                  </div>
+                </div>
+                <!-- Sélecteur de Khabar pour tester -->
+                <div class="flex items-center justify-center gap-2 mt-3 no-print">
+                  <button onclick="setWeatherExample('بَارِدٌ', 'Le temps est froid')" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 hover:bg-sage-100 text-slate-700 transition cursor-pointer">بَارِدٌ</button>
+                  <button onclick="setWeatherExample('مُعْتَدِلٌ', 'Le temps est doux')" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 hover:bg-sage-100 text-slate-700 transition cursor-pointer">مُعْتَدِلٌ</button>
+                  <button onclick="setWeatherExample('حَارٌّ', 'Le temps est chaud')" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 hover:bg-sage-100 text-slate-700 transition cursor-pointer">حَارٌّ</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================================================== -->
+        <!-- DÉTAIL 2 : الجملة الفعلية (La phrase verbale)         -->
+        <!-- ===================================================== -->
+        <div class="space-y-5 pt-8 mt-8 border-t border-slate-200">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h3 class="text-xl sm:text-2xl font-extrabold text-sage-700 flex items-center gap-2">
+              <span class="w-8 h-8 rounded-xl bg-sage-600 text-white inline-flex items-center justify-center text-base">2</span>
+              الجملة الفعلية (La phrase verbale)
+            </h3>
+          </div>
+
+          <p class="text-slate-700 text-base">
+            <strong>التعريف:</strong> هي الجملة التي <strong>تبدأ بفعل</strong> يدل على عمل أو حدث، وتتكون من ثلاثة عناصر أساسية:
+            <span class="translation-box fr-text block text-sm text-slate-600 mt-1">
+              Elle <strong>commence par un verbe</strong> qui exprime une action, et se compose généralement de trois éléments :
+            </span>
+          </p>
+
+          <!-- Les 3 composants de la phrase verbale -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="bg-sage-50/70 rounded-2xl p-4 border border-sage-100">
+              <div class="font-extrabold text-sage-700 text-lg">1. الفِعْل (Le verbe)</div>
+              <p class="text-sm text-slate-700 mt-1">الكلمة التي تدل على الحدث أو العمل (مثل: كَتَبَ، شَرِبَ).</p>
+              <p class="translation-box fr-text text-xs text-slate-600 mt-1">L'action effectuée.</p>
+            </div>
+            <div class="bg-slateBlue-50/70 rounded-2xl p-4 border border-slateBlue-100">
+              <div class="font-extrabold text-slateBlue-700 text-lg">2. الفَاعِل (Le sujet)</div>
+              <p class="text-sm text-slate-700 mt-1">من قام بالفعل، ويكون <strong>مرفوعًا</strong> (بالضمة ــُ).</p>
+              <p class="translation-box fr-text text-xs text-slate-600 mt-1">Celui qui fait l'action (au cas nominatif مرفوع).</p>
+            </div>
+            <div class="bg-amberSoft-50/80 rounded-2xl p-4 border border-amberSoft-100">
+              <div class="font-extrabold text-amberSoft-700 text-lg">3. المَفْعُول بِهِ (Le COD)</div>
+              <p class="text-sm text-slate-700 mt-1">من وقع عليه الفعل، ويكون <strong>منصوبًا</strong> (بالفتحة ــَ).</p>
+              <p class="translation-box fr-text text-xs text-slate-600 mt-1">Ce sur quoi porte l'action (au cas accusatif منصوب).</p>
+            </div>
+          </div>
+
+          <!-- Exemples analysés de phrase verbale -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Exemple verbal 1 -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-4">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-sage-100 text-sage-700">مثال فعلي 1</span>
+                <span class="translation-box fr-text text-xs font-medium text-slate-500">L'élève a écrit la leçon</span>
+              </div>
+              <div class="flex items-center justify-center gap-3 sm:gap-4 py-3 bg-cream rounded-xl text-xl sm:text-2xl font-extrabold arabic-vowel">
+                <div class="text-center">
+                  <span class="text-sage-700">كَتَبَ</span>
+                  <span class="block text-xs font-bold text-sage-600 mt-1">فعل</span>
+                </div>
+                <div class="text-center">
+                  <span class="text-slateBlue-700">التِّلْمِيذُ</span>
+                  <span class="block text-xs font-bold text-slateBlue-600 mt-1">فاعل مرفوع</span>
+                </div>
+                <div class="text-center">
+                  <span class="text-amberSoft-700">الدَّرْسَ</span>
+                  <span class="block text-xs font-bold text-amberSoft-600 mt-1">مفعول به منصوب</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Exemple verbal 2 -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-4">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-sage-100 text-sage-700">مثال فعلي 2</span>
+                <span class="translation-box fr-text text-xs font-medium text-slate-500">Le garçon a bu l'eau</span>
+              </div>
+              <div class="flex items-center justify-center gap-3 sm:gap-4 py-3 bg-cream rounded-xl text-xl sm:text-2xl font-extrabold arabic-vowel">
+                <div class="text-center">
+                  <span class="text-sage-700">شَرِبَ</span>
+                  <span class="block text-xs font-bold text-sage-600 mt-1">فعل</span>
+                </div>
+                <div class="text-center">
+                  <span class="text-slateBlue-700">الوَلَدُ</span>
+                  <span class="block text-xs font-bold text-slateBlue-600 mt-1">فاعل مرفوع</span>
+                </div>
+                <div class="text-center">
+                  <span class="text-amberSoft-700">المَاءَ</span>
+                  <span class="block text-xs font-bold text-amberSoft-600 mt-1">مفعول به منصوب</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- SECTION 2 : EXERCICES PROGRESSIFS (تمارين وتداريب تطبيقية)  -->
+    <!-- ========================================================= -->
+    <section aria-labelledby="exercises-title" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm card-shadow space-y-8">
+      <div class="border-b border-slate-100 pb-4 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 id="exercises-title" class="text-2xl sm:text-3xl font-extrabold text-slateBlue-800">
+            تمارين وتداريب تطبيقية
+          </h2>
+          <p class="translation-box fr-text text-sm text-slate-600 mt-1">
+            Exercices pratiques progressifs — Entraîne-toi seul et vérifie tes réponses instantanément !
+          </p>
+        </div>
+
+        <!-- Compteur de score global -->
+        <div class="bg-slateBlue-50 border border-slateBlue-100 px-4 py-2 rounded-2xl text-center no-print">
+          <span class="text-xs font-bold text-slateBlue-600 block">نتيجتك الحالية (Score)</span>
+          <span id="global-score" class="text-xl font-extrabold text-slateBlue-800">0 / 10</span>
+        </div>
+      </div>
+
+      <!-- ===================================================== -->
+      <!-- التمرين 1 (سهل) : التمييز بين الجملة الاسمية والفعلية -->
+      <!-- ===================================================== -->
+      <div class="space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-lg sm:text-xl font-extrabold text-slateBlue-800">
+            <span class="inline-block px-3 py-0.5 rounded-full text-xs font-bold bg-sage-100 text-sage-700 ml-2">سهل • Facile</span>
+            التمرين 1: ميّز بين الجملة الاسمية والجملة الفعلية
+          </h3>
+          <span class="translation-box fr-text text-xs text-slate-500">Choisis le bon type pour chaque phrase</span>
+        </div>
+
+        <p class="text-sm text-slate-600">
+          انظر إلى <strong>الكلمة الأولى</strong> في كل جملة: هل هي اسم أم فعل؟ ثم اختر النوع الصحيح:
+        </p>
+
+        <div id="ex1-container" class="space-y-3"><div class="p-4 rounded-2xl border border-slate-200 bg-cream/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-slateBlue-700 text-white text-xs font-bold inline-flex items-center justify-center">1</span>
+              <span class="text-xl font-extrabold text-slate-800 arabic-vowel">الشَّمْسُ طَالِعَةٌ</span>
+            </div>
+            <span class="translation-box fr-text text-xs text-slate-500 block mt-1 mr-8">Le soleil est levé / brillant</span>
+            <div id="fb-ex1_1" class="hidden text-xs font-bold mt-2 mr-8 animate-fade-in"></div>
+          </div>
+
+          <div class="flex items-center gap-2 shrink-0 no-print">
+            <button onclick="checkEx1('ex1_1', 'اسمية')" id="btn-ex1_1-اسمية" class="px-4 py-2 rounded-xl text-sm font-bold border border-slateBlue-200 bg-white text-slateBlue-800 hover:bg-slateBlue-50 transition cursor-pointer">
+              جملة اسمية
+            </button>
+            <button onclick="checkEx1('ex1_1', 'فعلية')" id="btn-ex1_1-فعلية" class="px-4 py-2 rounded-xl text-sm font-bold border border-sage-200 bg-white text-sage-700 hover:bg-sage-50 transition cursor-pointer">
+              جملة فعلية
+            </button>
+          </div>
+        </div><div class="p-4 rounded-2xl border border-slate-200 bg-cream/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-slateBlue-700 text-white text-xs font-bold inline-flex items-center justify-center">2</span>
+              <span class="text-xl font-extrabold text-slate-800 arabic-vowel">كَتَبَ التِّلْمِيذُ الدَّرْسَ</span>
+            </div>
+            <span class="translation-box fr-text text-xs text-slate-500 block mt-1 mr-8">L'élève a écrit la leçon</span>
+            <div id="fb-ex1_2" class="hidden text-xs font-bold mt-2 mr-8 animate-fade-in"></div>
+          </div>
+
+          <div class="flex items-center gap-2 shrink-0 no-print">
+            <button onclick="checkEx1('ex1_2', 'اسمية')" id="btn-ex1_2-اسمية" class="px-4 py-2 rounded-xl text-sm font-bold border border-slateBlue-200 bg-white text-slateBlue-800 hover:bg-slateBlue-50 transition cursor-pointer">
+              جملة اسمية
+            </button>
+            <button onclick="checkEx1('ex1_2', 'فعلية')" id="btn-ex1_2-فعلية" class="px-4 py-2 rounded-xl text-sm font-bold border border-sage-200 bg-white text-sage-700 hover:bg-sage-50 transition cursor-pointer">
+              جملة فعلية
+            </button>
+          </div>
+        </div><div class="p-4 rounded-2xl border border-slate-200 bg-cream/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-slateBlue-700 text-white text-xs font-bold inline-flex items-center justify-center">3</span>
+              <span class="text-xl font-extrabold text-slate-800 arabic-vowel">الجَوُّ مُعْتَدِلٌ</span>
+            </div>
+            <span class="translation-box fr-text text-xs text-slate-500 block mt-1 mr-8">Le temps est doux</span>
+            <div id="fb-ex1_3" class="hidden text-xs font-bold mt-2 mr-8 animate-fade-in"></div>
+          </div>
+
+          <div class="flex items-center gap-2 shrink-0 no-print">
+            <button onclick="checkEx1('ex1_3', 'اسمية')" id="btn-ex1_3-اسمية" class="px-4 py-2 rounded-xl text-sm font-bold border border-slateBlue-200 bg-white text-slateBlue-800 hover:bg-slateBlue-50 transition cursor-pointer">
+              جملة اسمية
+            </button>
+            <button onclick="checkEx1('ex1_3', 'فعلية')" id="btn-ex1_3-فعلية" class="px-4 py-2 rounded-xl text-sm font-bold border border-sage-200 bg-white text-sage-700 hover:bg-sage-50 transition cursor-pointer">
+              جملة فعلية
+            </button>
+          </div>
+        </div><div class="p-4 rounded-2xl border border-slate-200 bg-cream/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-slateBlue-700 text-white text-xs font-bold inline-flex items-center justify-center">4</span>
+              <span class="text-xl font-extrabold text-slate-800 arabic-vowel">شَرِبَ الوَلَدُ المَاءَ</span>
+            </div>
+            <span class="translation-box fr-text text-xs text-slate-500 block mt-1 mr-8">Le garçon a bu l'eau</span>
+            <div id="fb-ex1_4" class="hidden text-xs font-bold mt-2 mr-8 animate-fade-in"></div>
+          </div>
+
+          <div class="flex items-center gap-2 shrink-0 no-print">
+            <button onclick="checkEx1('ex1_4', 'اسمية')" id="btn-ex1_4-اسمية" class="px-4 py-2 rounded-xl text-sm font-bold border border-slateBlue-200 bg-white text-slateBlue-800 hover:bg-slateBlue-50 transition cursor-pointer">
+              جملة اسمية
+            </button>
+            <button onclick="checkEx1('ex1_4', 'فعلية')" id="btn-ex1_4-فعلية" class="px-4 py-2 rounded-xl text-sm font-bold border border-sage-200 bg-white text-sage-700 hover:bg-sage-50 transition cursor-pointer">
+              جملة فعلية
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- ===================================================== -->
+      <!-- التمرين 2 (متوسط) : المبتدأ والخبر والحركة الإعرابية -->
+      <!-- ===================================================== -->
+      <div class="space-y-4 pt-6 border-t border-slate-100">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-lg sm:text-xl font-extrabold text-slateBlue-800">
+            <span class="inline-block px-3 py-0.5 rounded-full text-xs font-bold bg-amberSoft-100 text-amberSoft-700 ml-2">متوسط • Moyen</span>
+            التمرين 2: أكمل الجملة الاسمية بالخبر المرفوع المناسب
+          </h3>
+          <span class="translation-box fr-text text-xs text-slate-500">Complète avec le bon Khabar (مرفوع)</span>
+        </div>
+
+        <p class="text-sm text-slate-600">
+          تذكّر: المبتدأ مرفوع والخبر دائمًا <strong>مرفوع بالضمة (ــٌ)</strong>. اختر الكلمة الصحيحة شكلاً ومعنىً:
+        </p>
+
+        <div id="ex2-container" class="space-y-3"><div class="p-4 rounded-2xl border border-slate-200 bg-cream/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2 text-xl font-extrabold text-slate-800 arabic-vowel">
+              <span class="w-6 h-6 rounded-full bg-amberSoft-600 text-white text-xs font-bold inline-flex items-center justify-center">1</span>
+              <span class="text-slateBlue-700">المَدْرَسَةُ</span>
+              <span id="slot-ex2_1" class="inline-block min-w-[85px] text-center border-b-2 border-dashed border-slate-400 text-sage-700 px-2">......</span>
+            </div>
+            <span class="translation-box fr-text text-xs text-slate-500 block mt-1 mr-8">L'école est belle</span>
+            <div id="fb-ex2_1" class="hidden text-xs font-bold mt-2 mr-8 animate-fade-in"></div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 shrink-0 no-print">
+            
+              <button onclick="checkEx2('ex2_1', 'جَمِيلَةٌ')" class="px-3.5 py-2 rounded-xl text-base font-extrabold border border-slate-200 bg-white text-slate-800 hover:bg-amberSoft-50 hover:border-amberSoft-600 transition cursor-pointer arabic-vowel">
+                جَمِيلَةٌ
+              </button>
+            
+              <button onclick="checkEx2('ex2_1', 'جَمِيلَةً')" class="px-3.5 py-2 rounded-xl text-base font-extrabold border border-slate-200 bg-white text-slate-800 hover:bg-amberSoft-50 hover:border-amberSoft-600 transition cursor-pointer arabic-vowel">
+                جَمِيلَةً
+              </button>
+            
+              <button onclick="checkEx2('ex2_1', 'جَمِيلَةٍ')" class="px-3.5 py-2 rounded-xl text-base font-extrabold border border-slate-200 bg-white text-slate-800 hover:bg-amberSoft-50 hover:border-amberSoft-600 transition cursor-pointer arabic-vowel">
+                جَمِيلَةٍ
+              </button>
+            
+          </div>
+        </div><div class="p-4 rounded-2xl border border-slate-200 bg-cream/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2 text-xl font-extrabold text-slate-800 arabic-vowel">
+              <span class="w-6 h-6 rounded-full bg-amberSoft-600 text-white text-xs font-bold inline-flex items-center justify-center">2</span>
+              <span class="text-slateBlue-700">القَمَرُ</span>
+              <span id="slot-ex2_2" class="inline-block min-w-[85px] text-center border-b-2 border-dashed border-slate-400 text-sage-700 px-2">......</span>
+            </div>
+            <span class="translation-box fr-text text-xs text-slate-500 block mt-1 mr-8">La lune est lumineuse</span>
+            <div id="fb-ex2_2" class="hidden text-xs font-bold mt-2 mr-8 animate-fade-in"></div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 shrink-0 no-print">
+            
+              <button onclick="checkEx2('ex2_2', 'مُنِيرًا')" class="px-3.5 py-2 rounded-xl text-base font-extrabold border border-slate-200 bg-white text-slate-800 hover:bg-amberSoft-50 hover:border-amberSoft-600 transition cursor-pointer arabic-vowel">
+                مُنِيرًا
+              </button>
+            
+              <button onclick="checkEx2('ex2_2', 'مُنِيرٌ')" class="px-3.5 py-2 rounded-xl text-base font-extrabold border border-slate-200 bg-white text-slate-800 hover:bg-amberSoft-50 hover:border-amberSoft-600 transition cursor-pointer arabic-vowel">
+                مُنِيرٌ
+              </button>
+            
+              <button onclick="checkEx2('ex2_2', 'مُنِيرٍ')" class="px-3.5 py-2 rounded-xl text-base font-extrabold border border-slate-200 bg-white text-slate-800 hover:bg-amberSoft-50 hover:border-amberSoft-600 transition cursor-pointer arabic-vowel">
+                مُنِيرٍ
+              </button>
+            
+          </div>
+        </div><div class="p-4 rounded-2xl border border-slate-200 bg-cream/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2 text-xl font-extrabold text-slate-800 arabic-vowel">
+              <span class="w-6 h-6 rounded-full bg-amberSoft-600 text-white text-xs font-bold inline-flex items-center justify-center">3</span>
+              <span class="text-slateBlue-700">الجَوُّ</span>
+              <span id="slot-ex2_3" class="inline-block min-w-[85px] text-center border-b-2 border-dashed border-slate-400 text-sage-700 px-2">......</span>
+            </div>
+            <span class="translation-box fr-text text-xs text-slate-500 block mt-1 mr-8">Le temps est chaud (en été)</span>
+            <div id="fb-ex2_3" class="hidden text-xs font-bold mt-2 mr-8 animate-fade-in"></div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 shrink-0 no-print">
+            
+              <button onclick="checkEx2('ex2_3', 'حَارٍّ')" class="px-3.5 py-2 rounded-xl text-base font-extrabold border border-slate-200 bg-white text-slate-800 hover:bg-amberSoft-50 hover:border-amberSoft-600 transition cursor-pointer arabic-vowel">
+                حَارٍّ
+              </button>
+            
+              <button onclick="checkEx2('ex2_3', 'حَارًّا')" class="px-3.5 py-2 rounded-xl text-base font-extrabold border border-slate-200 bg-white text-slate-800 hover:bg-amberSoft-50 hover:border-amberSoft-600 transition cursor-pointer arabic-vowel">
+                حَارًّا
+              </button>
+            
+              <button onclick="checkEx2('ex2_3', 'حَارٌّ')" class="px-3.5 py-2 rounded-xl text-base font-extrabold border border-slate-200 bg-white text-slate-800 hover:bg-amberSoft-50 hover:border-amberSoft-600 transition cursor-pointer arabic-vowel">
+                حَارٌّ
+              </button>
+            
+          </div>
+        </div><div class="p-4 rounded-2xl border border-slate-200 bg-cream/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2 text-xl font-extrabold text-slate-800 arabic-vowel">
+              <span class="w-6 h-6 rounded-full bg-amberSoft-600 text-white text-xs font-bold inline-flex items-center justify-center">4</span>
+              <span class="text-slateBlue-700">الشَّمْسُ</span>
+              <span id="slot-ex2_4" class="inline-block min-w-[85px] text-center border-b-2 border-dashed border-slate-400 text-sage-700 px-2">......</span>
+            </div>
+            <span class="translation-box fr-text text-xs text-slate-500 block mt-1 mr-8">Le soleil est brillant</span>
+            <div id="fb-ex2_4" class="hidden text-xs font-bold mt-2 mr-8 animate-fade-in"></div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 shrink-0 no-print">
+            
+              <button onclick="checkEx2('ex2_4', 'طَالِعَةٌ')" class="px-3.5 py-2 rounded-xl text-base font-extrabold border border-slate-200 bg-white text-slate-800 hover:bg-amberSoft-50 hover:border-amberSoft-600 transition cursor-pointer arabic-vowel">
+                طَالِعَةٌ
+              </button>
+            
+              <button onclick="checkEx2('ex2_4', 'طَالِعَةً')" class="px-3.5 py-2 rounded-xl text-base font-extrabold border border-slate-200 bg-white text-slate-800 hover:bg-amberSoft-50 hover:border-amberSoft-600 transition cursor-pointer arabic-vowel">
+                طَالِعَةً
+              </button>
+            
+              <button onclick="checkEx2('ex2_4', 'طَالِعَةٍ')" class="px-3.5 py-2 rounded-xl text-base font-extrabold border border-slate-200 bg-white text-slate-800 hover:bg-amberSoft-50 hover:border-amberSoft-600 transition cursor-pointer arabic-vowel">
+                طَالِعَةٍ
+              </button>
+            
+          </div>
+        </div></div>
+      </div>
+
+      <!-- ===================================================== -->
+      <!-- التمرين 3 (أعلى قليلًا) : بناء وتصنيف الجمل           -->
+      <!-- ===================================================== -->
+      <div class="space-y-4 pt-6 border-t border-slate-100">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-lg sm:text-xl font-extrabold text-slateBlue-800">
+            <span class="inline-block px-3 py-0.5 rounded-full text-xs font-bold bg-slateBlue-100 text-slateBlue-700 ml-2">متقدم قليلاً • Avancé</span>
+            التمرين 3: رتّب الكلمات لتكوين جملة صحيحة
+          </h3>
+          <span class="translation-box fr-text text-xs text-slate-500">Clique sur les mots dans le bon ordre</span>
+        </div>
+
+        <p class="text-sm text-slate-600">
+          اضغط على الكلمات بالترتيب الصحيح لبناء الجملة المطلوبة (اضغط على الكلمة المختارة لإزالتها إذا أخطأت):
+        </p>
+
+        <div id="ex3-container" class="space-y-5"><div class="p-5 rounded-2xl border border-slate-200 bg-cream/60 space-y-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-slateBlue-700 text-white text-xs font-bold inline-flex items-center justify-center">1</span>
+              <span class="font-bold text-slate-800 text-base">كوّن جملة اسمية (مبتدأ مرفوع + خبر مرفوع):</span>
+            </div>
+            <span class="translation-box fr-text text-xs text-slate-500 block mt-1 mr-8">Construis la phrase nominale : « Le temps est froid »</span>
+          </div>
+
+          <!-- Zone de dépôt des mots choisis -->
+          <div id="answer-zone-ex3_1" class="min-h-[52px] p-2.5 rounded-xl bg-white border-2 border-dashed border-slateBlue-200 flex flex-wrap items-center gap-2">
+            <span class="text-xs text-slate-400">اضغط على الكلمات في الأسفل لترتيبها هنا...</span>
+          </div>
+
+          <!-- Banque de mots -->
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-1 no-print">
+            <div id="bank-ex3_1" class="flex flex-wrap items-center gap-2">
+              
+                <button onclick="selectEx3Word('ex3_1', 'بَارِدٌ', 0)" id="word-ex3_1-0" class="px-4 py-2 rounded-xl text-lg font-extrabold bg-white border border-slate-300 text-slateBlue-800 hover:bg-slateBlue-50 shadow-sm transition cursor-pointer arabic-vowel">
+                  بَارِدٌ
+                </button>
+              
+                <button onclick="selectEx3Word('ex3_1', 'الجَوُّ', 1)" id="word-ex3_1-1" class="px-4 py-2 rounded-xl text-lg font-extrabold bg-white border border-slate-300 text-slateBlue-800 hover:bg-slateBlue-50 shadow-sm transition cursor-pointer arabic-vowel">
+                  الجَوُّ
+                </button>
+              
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button onclick="clearEx3('ex3_1')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-200 text-slate-700 hover:bg-slate-300 transition cursor-pointer">
+                مسح
+              </button>
+              <button onclick="checkEx3('ex3_1')" class="px-4 py-1.5 rounded-xl text-xs font-bold bg-sage-600 text-white hover:bg-sage-700 transition cursor-pointer">
+                تحقق من الجملة ✓
+              </button>
+            </div>
+          </div>
+
+          <div id="fb-ex3_1" class="hidden text-xs font-bold pt-1 animate-fade-in"></div>
+        </div><div class="p-5 rounded-2xl border border-slate-200 bg-cream/60 space-y-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-slateBlue-700 text-white text-xs font-bold inline-flex items-center justify-center">2</span>
+              <span class="font-bold text-slate-800 text-base">كوّن جملة فعلية (فعل + فاعل مرفوع + مفعول به منصوب):</span>
+            </div>
+            <span class="translation-box fr-text text-xs text-slate-500 block mt-1 mr-8">Construis la phrase verbale : « L'élève a écrit la leçon »</span>
+          </div>
+
+          <!-- Zone de dépôt des mots choisis -->
+          <div id="answer-zone-ex3_2" class="min-h-[52px] p-2.5 rounded-xl bg-white border-2 border-dashed border-slateBlue-200 flex flex-wrap items-center gap-2">
+            <span class="text-xs text-slate-400">اضغط على الكلمات في الأسفل لترتيبها هنا...</span>
+          </div>
+
+          <!-- Banque de mots -->
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-1 no-print">
+            <div id="bank-ex3_2" class="flex flex-wrap items-center gap-2">
+              
+                <button onclick="selectEx3Word('ex3_2', 'الدَّرْسَ', 0)" id="word-ex3_2-0" class="px-4 py-2 rounded-xl text-lg font-extrabold bg-white border border-slate-300 text-slateBlue-800 hover:bg-slateBlue-50 shadow-sm transition cursor-pointer arabic-vowel">
+                  الدَّرْسَ
+                </button>
+              
+                <button onclick="selectEx3Word('ex3_2', 'كَتَبَ', 1)" id="word-ex3_2-1" class="px-4 py-2 rounded-xl text-lg font-extrabold bg-white border border-slate-300 text-slateBlue-800 hover:bg-slateBlue-50 shadow-sm transition cursor-pointer arabic-vowel">
+                  كَتَبَ
+                </button>
+              
+                <button onclick="selectEx3Word('ex3_2', 'التِّلْمِيذُ', 2)" id="word-ex3_2-2" class="px-4 py-2 rounded-xl text-lg font-extrabold bg-white border border-slate-300 text-slateBlue-800 hover:bg-slateBlue-50 shadow-sm transition cursor-pointer arabic-vowel">
+                  التِّلْمِيذُ
+                </button>
+              
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button onclick="clearEx3('ex3_2')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-200 text-slate-700 hover:bg-slate-300 transition cursor-pointer">
+                مسح
+              </button>
+              <button onclick="checkEx3('ex3_2')" class="px-4 py-1.5 rounded-xl text-xs font-bold bg-sage-600 text-white hover:bg-sage-700 transition cursor-pointer">
+                تحقق من الجملة ✓
+              </button>
+            </div>
+          </div>
+
+          <div id="fb-ex3_2" class="hidden text-xs font-bold pt-1 animate-fade-in"></div>
+        </div></div>
+      </div>
+
+      <!-- Bouton de réinitialisation des exercices -->
+      <div class="pt-4 flex justify-end no-print">
+        <button onclick="resetAllExercises()" class="px-4 py-2 rounded-xl text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition cursor-pointer">
+          🔄 إعادة المحاولة في جميع التمارين (Recommencer)
+        </button>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- SECTION 3 : CORRIGÉ TYPE (التصحيح النموذجي)               -->
+    <!-- ========================================================= -->
+    <section aria-labelledby="corrige-title" class="bg-white rounded-3xl p-6 sm:p-8 border-2 border-sage-100 shadow-sm card-shadow">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 id="corrige-title" class="text-2xl sm:text-3xl font-extrabold text-sage-700">
+            التصحيح النموذجي (Corrigé type)
+          </h2>
+          <p class="translation-box fr-text text-sm text-slate-600 mt-1">
+            Vérifie tes réponses et comprends la justification de chaque exercice.
+          </p>
+        </div>
+
+        <button id="toggle-corrige-btn" onclick="toggleCorrige()" class="px-4 py-2.5 rounded-xl text-sm font-bold bg-sage-600 text-white hover:bg-sage-700 transition shadow-sm cursor-pointer no-print">
+          📖 إظهار / إخفاء التصحيح النموذجي
+        </button>
+      </div>
+
+      <div id="corrige-content" class="mt-6 space-y-6 pt-6 border-t border-slate-100">
+        <!-- Correction Ex 1 -->
+        <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200/70">
+          <h3 class="font-extrabold text-slateBlue-800 text-lg mb-3">
+            ✅ تصحيح التمرين 1 (التمييز بين الجملة الاسمية والفعلية):
+          </h3>
+          <ul class="space-y-2 text-sm sm:text-base text-slate-700">
+            <li>1. <strong>الشَّمْسُ طَالِعَةٌ</strong> ← <span class="font-bold text-slateBlue-700">جملة اسمية</span> (لأنها تبدأ باسم: الشَّمْسُ).</li>
+            <li>2. <strong>كَتَبَ التِّلْمِيذُ الدَّرْسَ</strong> ← <span class="font-bold text-sage-700">جملة فعلية</span> (لأنها تبدأ بفعل: كَتَبَ).</li>
+            <li>3. <strong>الجَوُّ مُعْتَدِلٌ</strong> ← <span class="font-bold text-slateBlue-700">جملة اسمية</span> (لأنها تبدأ باسم: الجَوُّ).</li>
+            <li>4. <strong>شَرِبَ الوَلَدُ المَاءَ</strong> ← <span class="font-bold text-sage-700">جملة فعلية</span> (لأنها تبدأ بفعل: شَرِبَ).</li>
+          </ul>
+        </div>
+
+        <!-- Correction Ex 2 -->
+        <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200/70">
+          <h3 class="font-extrabold text-slateBlue-800 text-lg mb-3">
+            ✅ تصحيح التمرين 2 (إكمال الجملة الاسمية بالخبر المرفوع):
+          </h3>
+          <ul class="space-y-2 text-sm sm:text-base text-slate-700">
+            <li>1. المَدْرَسَةُ <strong class="text-sage-700">جَمِيلَةٌ</strong> (الخبر دائمًا مرفوع بالضمة ــٌ، وليس منصوبًا «جميلةً» أو مجرورًا «جميلةٍ»).</li>
+            <li>2. القَمَرُ <strong class="text-sage-700">مُنِيرٌ</strong> (مبتدأ مرفوع + خبر مرفوع بالضمة ــٌ).</li>
+            <li>3. الجَوُّ <strong class="text-sage-700">حَارٌّ</strong> في الصيف (خبر مرفوع بالضمة ــٌ ومناسب للمعنى).</li>
+            <li>4. الشَّمْسُ <strong class="text-sage-700">طَالِعَةٌ</strong> (خبر مرفوع بالضمة ــٌ).</li>
+          </ul>
+        </div>
+
+        <!-- Correction Ex 3 -->
+        <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200/70">
+          <h3 class="font-extrabold text-slateBlue-800 text-lg mb-3">
+            ✅ تصحيح التمرين 3 (بناء وترتيب الجمل):
+          </h3>
+          <ul class="space-y-3 text-sm sm:text-base text-slate-700">
+            <li>
+              1. <strong>الجَوُّ بَارِدٌ</strong> — <em>جملة اسمية</em> (مبتدأ مرفوع: الجَوُّ + خبر مرفوع: بَارِدٌ).
+              <span class="translation-box fr-text block text-xs text-slate-500">Le temps est froid (Phrase nominale).</span>
+            </li>
+            <li>
+              2. <strong>كَتَبَ التِّلْمِيذُ الدَّرْسَ</strong> — <em>جملة فعلية</em> (فعل: كَتَبَ + فاعل مرفوع: التِّلْمِيذُ + مفعول به منصوب: الدَّرْسَ).
+              <span class="translation-box fr-text block text-xs text-slate-500">L'élève a écrit la leçon (Phrase verbale).</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="max-w-4xl mx-auto px-4 pb-10 text-center text-xs text-slate-500">
+    <p>مورد تعليمي تفاعلي لمادة اللغة العربية — مستوى مبتدئ • Ressource éducative autonome (Arabe / Français)</p>
+  </footer>
+
+  <!-- ========================================================= -->
+  <!-- LOGIQUE JAVASCRIPT INTERACTIVE                            -->
+  <!-- ========================================================= -->
+  <script>
+    // Données des exercices
+    const ex1Data = [
+      {
+        id: 'ex1_1',
+        sentence: 'الشَّمْسُ طَالِعَةٌ',
+        fr: 'Le soleil est levé / brillant',
+        correct: 'اسمية',
+        explanation: 'أحسنت! تبدأ بكلمة (الشَّمْسُ) وهي اسم، إذن هي جملة اسمية.'
+      },
+      {
+        id: 'ex1_2',
+        sentence: 'كَتَبَ التِّلْمِيذُ الدَّرْسَ',
+        fr: "L'élève a écrit la leçon",
+        correct: 'فعلية',
+        explanation: 'ممتاز! تبدأ بكلمة (كَتَبَ) وهي فعل، إذن هي جملة فعلية.'
+      },
+      {
+        id: 'ex1_3',
+        sentence: 'الجَوُّ مُعْتَدِلٌ',
+        fr: 'Le temps est doux',
+        correct: 'اسمية',
+        explanation: 'صحيح! تبدأ بكلمة (الجَوُّ) وهي اسم، إذن هي جملة اسمية.'
+      },
+      {
+        id: 'ex1_4',
+        sentence: 'شَرِبَ الوَلَدُ المَاءَ',
+        fr: "Le garçon a bu l'eau",
+        correct: 'فعلية',
+        explanation: 'رائع! تبدأ بكلمة (شَرِبَ) وهي فعل، إذن هي جملة فعلية.'
+      }
+    ];
+
+    const ex2Data = [
+      {
+        id: 'ex2_1',
+        prefix: 'المَدْرَسَةُ',
+        fr: "L'école est belle",
+        options: ['جَمِيلَةٌ', 'جَمِيلَةً', 'جَمِيلَةٍ'],
+        correct: 'جَمِيلَةٌ',
+        hint: 'تذكّر: الخبر دائمًا مرفوع بالضمة (ــٌ).'
+      },
+      {
+        id: 'ex2_2',
+        prefix: 'القَمَرُ',
+        fr: 'La lune est lumineuse',
+        options: ['مُنِيرًا', 'مُنِيرٌ', 'مُنِيرٍ'],
+        correct: 'مُنِيرٌ',
+        hint: 'الخبر مرفوع وعلامة رفعه الضمة (مُنِيرٌ).'
+      },
+      {
+        id: 'ex2_3',
+        prefix: 'الجَوُّ',
+        fr: 'Le temps est chaud (en été)',
+        options: ['حَارٍّ', 'حَارًّا', 'حَارٌّ'],
+        correct: 'حَارٌّ',
+        hint: 'نختار الكلمة المرفوعة بالضمة (حَارٌّ).'
+      },
+      {
+        id: 'ex2_4',
+        prefix: 'الشَّمْسُ',
+        fr: 'Le soleil est brillant',
+        options: ['طَالِعَةٌ', 'طَالِعَةً', 'طَالِعَةٍ'],
+        correct: 'طَالِعَةٌ',
+        hint: 'المبتدأ مرفوع (الشَّمْسُ) والخبر مرفوع (طَالِعَةٌ).'
+      }
+    ];
+
+    const ex3Data = [
+      {
+        id: 'ex3_1',
+        instruction: 'كوّن جملة اسمية (مبتدأ مرفوع + خبر مرفوع):',
+        fr: 'Construis la phrase nominale : « Le temps est froid »',
+        words: ['بَارِدٌ', 'الجَوُّ'],
+        target: ['الجَوُّ', 'بَارِدٌ'],
+        explanation: 'أحسنت! الجَوُّ (مبتدأ مرفوع) + بَارِدٌ (خبر مرفوع).'
+      },
+      {
+        id: 'ex3_2',
+        instruction: 'كوّن جملة فعلية (فعل + فاعل مرفوع + مفعول به منصوب):',
+        fr: "Construis la phrase verbale : « L'élève a écrit la leçon »",
+        words: ['الدَّرْسَ', 'كَتَبَ', 'التِّلْمِيذُ'],
+        target: ['كَتَبَ', 'التِّلْمِيذُ', 'الدَّرْسَ'],
+        explanation: 'ممتاز! كَتَبَ (فعل) + التِّلْمِيذُ (فاعل مرفوع) + الدَّرْسَ (مفعول به منصوب).'
+      }
+    ];
+
+    // Suivi des scores par question
+    const scores = {};
+    const totalQuestions = ex1Data.length + ex2Data.length + ex3Data.length;
+
+    function updateGlobalScore() {
+      const sum = Object.values(scores).reduce((acc, val) => acc + (val ? 1 : 0), 0);
+      document.getElementById('global-score').textContent = `${sum} / ${totalQuestions}`;
+    }
+
+    // Exemple interactif de la météo dans le cours
+    function setWeatherExample(khabarAr, frText) {
+      document.getElementById('weather-khabar').textContent = khabarAr;
+      document.getElementById('weather-fr').textContent = frText;
+    }
+
+    // Afficher / Masquer la traduction française
+    function toggleTranslations() {
+      const body = document.body;
+      const btn = document.getElementById('toggle-fr-btn');
+      body.classList.toggle('hide-translations');
+      if (body.classList.contains('hide-translations')) {
+        btn.textContent = '👁️ إظهار الترجمة الفرنسية';
+      } else {
+        btn.textContent = '👁️ إخفاء الترجمة الفرنسية';
+      }
+    }
+
+    // Afficher / Masquer le corrigé type
+    function toggleCorrige() {
+      const content = document.getElementById('corrige-content');
+      content.classList.toggle('hidden');
+    }
+
+    // Rendu de l'exercice 1
+    function renderEx1() {
+      const container = document.getElementById('ex1-container');
+      container.innerHTML = '';
+
+      ex1Data.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = 'p-4 rounded-2xl border border-slate-200 bg-cream/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3';
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-slateBlue-700 text-white text-xs font-bold inline-flex items-center justify-center">${index + 1}</span>
+              <span class="text-xl font-extrabold text-slate-800 arabic-vowel">${item.sentence}</span>
+            </div>
+            <span class="translation-box fr-text text-xs text-slate-500 block mt-1 mr-8">${item.fr}</span>
+            <div id="fb-${item.id}" class="hidden text-xs font-bold mt-2 mr-8 animate-fade-in"></div>
+          </div>
+
+          <div class="flex items-center gap-2 shrink-0 no-print">
+            <button onclick="checkEx1('${item.id}', 'اسمية')" id="btn-${item.id}-اسمية"
+              class="px-4 py-2 rounded-xl text-sm font-bold border border-slateBlue-200 bg-white text-slateBlue-800 hover:bg-slateBlue-50 transition cursor-pointer">
+              جملة اسمية
+            </button>
+            <button onclick="checkEx1('${item.id}', 'فعلية')" id="btn-${item.id}-فعلية"
+              class="px-4 py-2 rounded-xl text-sm font-bold border border-sage-200 bg-white text-sage-700 hover:bg-sage-50 transition cursor-pointer">
+              جملة فعلية
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function checkEx1(id, choice) {
+      const item = ex1Data.find(x => x.id === id);
+      const fb = document.getElementById(`fb-${id}`);
+      const btnNom = document.getElementById(`btn-${id}-اسمية`);
+      const btnVerb = document.getElementById(`btn-${id}-فعلية`);
+
+      // Réinitialiser styles des boutons
+      [btnNom, btnVerb].forEach(b => {
+        b.classList.remove('ring-2', 'ring-sage-500', 'bg-sage-100', 'ring-red-400', 'bg-red-50');
+      });
+
+      const activeBtn = choice === 'اسمية' ? btnNom : btnVerb;
+      fb.classList.remove('hidden', 'text-sage-700', 'text-red-600');
+
+      if (choice === item.correct) {
+        scores[id] = true;
+        activeBtn.classList.add('ring-2', 'ring-sage-500', 'bg-sage-100');
+        fb.classList.add('text-sage-700');
+        fb.textContent = `✅ ${item.explanation}`;
+      } else {
+        scores[id] = false;
+        activeBtn.classList.add('ring-2', 'ring-red-400', 'bg-red-50');
+        fb.classList.add('text-red-600');
+        fb.textContent = `❌ حاول مرة أخرى: انظر إلى أول كلمة في الجملة هل هي اسم أم فعل؟`;
+      }
+      updateGlobalScore();
+    }
+
+    // Rendu de l'exercice 2
+    function renderEx2() {
+      const container = document.getElementById('ex2-container');
+      container.innerHTML = '';
+
+      ex2Data.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = 'p-4 rounded-2xl border border-slate-200 bg-cream/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3';
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center gap-2 text-xl font-extrabold text-slate-800 arabic-vowel">
+              <span class="w-6 h-6 rounded-full bg-amberSoft-600 text-white text-xs font-bold inline-flex items-center justify-center">${index + 1}</span>
+              <span class="text-slateBlue-700">${item.prefix}</span>
+              <span id="slot-${item.id}" class="inline-block min-w-[85px] text-center border-b-2 border-dashed border-slate-400 text-sage-700 px-2">......</span>
+            </div>
+            <span class="translation-box fr-text text-xs text-slate-500 block mt-1 mr-8">${item.fr}</span>
+            <div id="fb-${item.id}" class="hidden text-xs font-bold mt-2 mr-8 animate-fade-in"></div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 shrink-0 no-print">
+            ${item.options.map(opt => `
+              <button onclick="checkEx2('${item.id}', '${opt}')"
+                class="px-3.5 py-2 rounded-xl text-base font-extrabold border border-slate-200 bg-white text-slate-800 hover:bg-amberSoft-50 hover:border-amberSoft-600 transition cursor-pointer arabic-vowel">
+                ${opt}
+              </button>
+            `).join('')}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function checkEx2(id, choice) {
+      const item = ex2Data.find(x => x.id === id);
+      const slot = document.getElementById(`slot-${id}`);
+      const fb = document.getElementById(`fb-${id}`);
+
+      slot.textContent = choice;
+      fb.classList.remove('hidden', 'text-sage-700', 'text-red-600');
+
+      if (choice === item.correct) {
+        scores[id] = true;
+        slot.className = 'inline-block min-w-[85px] text-center border-b-2 border-sage-600 text-sage-700 px-2';
+        fb.classList.add('text-sage-700');
+        fb.textContent = `✅ أحسنت! ${item.hint}`;
+      } else {
+        scores[id] = false;
+        slot.className = 'inline-block min-w-[85px] text-center border-b-2 border-red-500 text-red-600 px-2';
+        fb.classList.add('text-red-600');
+        fb.textContent = `❌ انتبه للحركة في آخر الكلمة! ${item.hint}`;
+      }
+      updateGlobalScore();
+    }
+
+    // État et rendu de l'exercice 3 (Reconstitution de phrases)
+    const ex3State = {};
+
+    function renderEx3() {
+      const container = document.getElementById('ex3-container');
+      container.innerHTML = '';
+
+      ex3Data.forEach((item, index) => {
+        ex3State[item.id] = [];
+        const card = document.createElement('div');
+        card.className = 'p-5 rounded-2xl border border-slate-200 bg-cream/60 space-y-3';
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-slateBlue-700 text-white text-xs font-bold inline-flex items-center justify-center">${index + 1}</span>
+              <span class="font-bold text-slate-800 text-base">${item.instruction}</span>
+            </div>
+            <span class="translation-box fr-text text-xs text-slate-500 block mt-1 mr-8">${item.fr}</span>
+          </div>
+
+          <!-- Zone de dépôt des mots choisis -->
+          <div id="answer-zone-${item.id}" class="min-h-[52px] p-2.5 rounded-xl bg-white border-2 border-dashed border-slateBlue-200 flex flex-wrap items-center gap-2">
+            <span class="text-xs text-slate-400">اضغط على الكلمات في الأسفل لترتيبها هنا...</span>
+          </div>
+
+          <!-- Banque de mots -->
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-1 no-print">
+            <div id="bank-${item.id}" class="flex flex-wrap items-center gap-2">
+              ${item.words.map((w, wIdx) => `
+                <button onclick="selectEx3Word('${item.id}', '${w}', ${wIdx})" id="word-${item.id}-${wIdx}"
+                  class="px-4 py-2 rounded-xl text-lg font-extrabold bg-white border border-slate-300 text-slateBlue-800 hover:bg-slateBlue-50 shadow-sm transition cursor-pointer arabic-vowel">
+                  ${w}
+                </button>
+              `).join('')}
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button onclick="clearEx3('${item.id}')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-200 text-slate-700 hover:bg-slate-300 transition cursor-pointer">
+                مسح
+              </button>
+              <button onclick="checkEx3('${item.id}')" class="px-4 py-1.5 rounded-xl text-xs font-bold bg-sage-600 text-white hover:bg-sage-700 transition cursor-pointer">
+                تحقق من الجملة ✓
+              </button>
+            </div>
+          </div>
+
+          <div id="fb-${item.id}" class="hidden text-xs font-bold pt-1 animate-fade-in"></div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function selectEx3Word(id, word, wordIdx) {
+      const btn = document.getElementById(`word-${id}-${wordIdx}`);
+      if (btn.disabled) return;
+
+      btn.disabled = true;
+      btn.classList.add('opacity-40', 'cursor-not-allowed');
+      ex3State[id].push({ word, wordIdx });
+      updateEx3AnswerZone(id);
+    }
+
+    function removeEx3Word(id, posIndex) {
+      const removed = ex3State[id].splice(posIndex, 1)[0];
+      if (removed) {
+        const btn = document.getElementById(`word-${id}-${removed.wordIdx}`);
+        btn.disabled = false;
+        btn.classList.remove('opacity-40', 'cursor-not-allowed');
+      }
+      updateEx3AnswerZone(id);
+    }
+
+    function updateEx3AnswerZone(id) {
+      const zone = document.getElementById(`answer-zone-${id}`);
+      const list = ex3State[id];
+      if (list.length === 0) {
+        zone.innerHTML = `<span class="text-xs text-slate-400">اضغط على الكلمات في الأسفل لترتيبها هنا...</span>`;
+        return;
+      }
+      zone.innerHTML = list.map((entry, idx) => `
+        <button onclick="removeEx3Word('${id}', ${idx})" title="اضغط للإزالة"
+          class="px-3.5 py-1.5 rounded-xl text-lg font-extrabold bg-slateBlue-700 text-white hover:bg-red-600 transition cursor-pointer arabic-vowel">
+          ${entry.word}
+        </button>
+      `).join('');
+    }
+
+    function clearEx3(id) {
+      const item = ex3Data.find(x => x.id === id);
+      ex3State[id] = [];
+      item.words.forEach((_, idx) => {
+        const btn = document.getElementById(`word-${id}-${idx}`);
+        btn.disabled = false;
+        btn.classList.remove('opacity-40', 'cursor-not-allowed');
+      });
+      updateEx3AnswerZone(id);
+      const fb = document.getElementById(`fb-${id}`);
+      fb.classList.add('hidden');
+    }
+
+    function checkEx3(id) {
+      const item = ex3Data.find(x => x.id === id);
+      const chosenWords = ex3State[id].map(x => x.word);
+      const fb = document.getElementById(`fb-${id}`);
+      fb.classList.remove('hidden', 'text-sage-700', 'text-red-600');
+
+      if (chosenWords.length < item.target.length) {
+        fb.classList.add('text-red-600');
+        fb.textContent = '⚠️ اختر جميع الكلمات أولاً قبل التحقق.';
+        return;
+      }
+
+      const isCorrect = chosenWords.every((w, i) => w === item.target[i]);
+      if (isCorrect) {
+        scores[id] = true;
+        fb.classList.add('text-sage-700');
+        fb.textContent = `✅ ${item.explanation}`;
+      } else {
+        scores[id] = false;
+        fb.classList.add('text-red-600');
+        fb.textContent = '❌ الترتيب غير صحيح. تذكّر: الجملة الاسمية تبدأ بالاسم، والجملة الفعلية تبدأ بالفعل.';
+      }
+      updateGlobalScore();
+    }
+
+    function resetAllExercises() {
+      Object.keys(scores).forEach(k => delete scores[k]);
+      updateGlobalScore();
+      renderEx1();
+      renderEx2();
+      renderEx3();
+    }
+
+    // Fonction permettant à l'enseignant ou à l'élève de télécharger le fichier HTML autonome pour Google Drive
+    function downloadSelfHTML() {
+      const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'Activite-2-Arabe-Types-de-Phrases.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // Initialisation au chargement de la page
+    window.addEventListener('DOMContentLoaded', () => {
+      renderEx1();
+      renderEx2();
+      renderEx3();
+      updateGlobalScore();
+    });
+  </script>
+
+</body></html>
